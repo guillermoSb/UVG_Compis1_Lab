@@ -58,6 +58,7 @@ class Automata:
 		
 
 		def draw(self):
+			"""Draws an automaton diagram"""
 			# create a new directed graph
 			dot = Digraph(graph_attr={'rankdir': 'LR'})
 			if self._type == 'NFA':
@@ -93,7 +94,34 @@ class Automata:
 			dot.render('automaton.gv', view=True)
 
 		
-
+		def simulate(self, input):
+			"""Simulates an Automaton"""
+			if self._type == 'DFA':
+				current_state = self._initial
+				for s in input:
+					# Check if s is on the symbol list
+					if s not in self._symbols:
+						raise Exception("[Simulation Error] - {} is not on symbol list.".format(s))
+					current_state = tuple(self._states[current_state][s])
+				# Check if the final state is on the final states
+				if current_state not in self._final:
+					raise Exception("[Simulation Error] - {} was not accepted.".format(input))
+				else:
+					return True
+			else:
+				S = self.e_closure(self._initial)
+				i = 0
+				while i != len(input):
+					if input[i] not in self._symbols:
+						raise Exception("[Simulation Error] - {} is not on symbol list.".format(input[i]))
+					S = self.e_closure_t(self.move(S, input[i]))
+					i += 1
+				if len(set(S).intersection({self._final})) > 0:
+					return True
+				else:
+					raise Exception("[Simulation Error] - {} was not accepted.".format(input))
+		
+		
 		# Class Methods
 		
 		
@@ -110,7 +138,6 @@ class Automata:
 				d_state = tuple(sorted(d_states_unmarked.pop()))
 				d_states_marked.append(set(d_state))
 				for input in nfa._symbols:
-					# print("Moving from", d_state, input)	
 					U = set(nfa.e_closure_t(nfa.move(d_state, input)))
 					if U not in d_states_marked:
 						d_states_unmarked.append(tuple(U))
@@ -136,19 +163,7 @@ class Automata:
 			return Automata(d_transitions, tuple(d_states_marked[0]), final_states, nfa._symbols, 'DFA', state_labels)
 		
 
-		def simulate(self, input):
-			if self._type == 'DFA':
-				current_state = self._initial
-				for s in input:
-					# Check if s is on the symbol list
-					if s not in self._symbols:
-						raise Exception("[Simulation Error] - {} is not on symbol list.".format(s))
-					current_state = tuple(self._states[current_state][s])
-				# Check if the final state is on the final states
-				if current_state not in self._final:
-					raise Exception("[Simulation Error] - {} was not accepted.".format(input))
-				else:
-					return True
+
 			
 		
 		@classmethod
