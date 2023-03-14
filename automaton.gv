@@ -1,0 +1,10 @@
+digraph {
+	graph [rankdir=LR]
+	0 [shape=triangle]
+	1
+	2
+	3 [shape=doublecircle]
+	0 -> 1 [label=b]
+	1 -> 2 [label="ε"]
+	2 -> 3 [label="@"]
+}
