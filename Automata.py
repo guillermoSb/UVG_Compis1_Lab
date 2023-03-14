@@ -12,6 +12,18 @@ class Automata:
 		}
 
 		
+		# Initializers
+
+
+		def __init__(self, states, initial, final, symbols, type = 'NFA'):
+				"""Constructor for the Automata class"""				
+				self._states = states
+				self._initial = initial
+				self._final = final
+				self._type = type
+				self._symbols = symbols
+
+		
 		# Instance methods
 
 
@@ -23,6 +35,7 @@ class Automata:
 				e_closure = e_closure + self._states[s]['ε']
 			return e_closure
 		
+
 		def e_closure_t(self, T):
 			"""Set of NFA states reachable from any s state in T on epsilon transitions"""
 			e_closure_t = T
@@ -45,7 +58,38 @@ class Automata:
 					reachable_states += self._states[t][a]
 			return reachable_states
 		
+
 		# Class Methods
+		
+		
+		@classmethod
+		def _dfa_from_nfa(self, nfa):
+			# Validate correct type of automaton
+			if nfa._type != 'NFA':
+				raise Exception("[NFA ERROR] The input for this method should be a NFA Automaton.")
+			d_transitions = {}	# DFA transitions will be stored here
+			d_states_unmarked = [nfa.e_closure(nfa._initial),]
+			d_states_marked = []
+			while len(d_states_unmarked) > 0:
+				# Mark the new state
+				d_state = d_states_unmarked.pop()
+				d_states_marked.append(set(d_state))
+
+				for input in nfa._symbols:
+					U = set(nfa.e_closure_t(nfa.move(d_state, input)))
+					if U not in d_states_marked:
+						d_states_unmarked.append(tuple(U))
+					if d_state in d_transitions.keys():
+						d_transitions[d_state] = {
+							**d_transitions[d_state],
+							input: U
+						}
+					else: 
+						d_transitions[d_state] = {
+							input: U
+						}
+			print(d_transitions)
+			
 		
 		@classmethod
 		def _from_regex(self, regex):		
@@ -56,12 +100,7 @@ class Automata:
 				self._postfix = self._postfix_from_regex(regex)	# Convert the regex to postfix
 				return self._states_from_postfix(self._postfix)	# Create the states for the automaton
 
-		def __init__(self, states, initial, final, type = 'NFA'):
-				"""Constructor for the Automata class"""				
-				self._states = states
-				self._initial = initial
-				self._final = final
-				self._type = type
+		
 				
 		
 		@classmethod
@@ -124,7 +163,7 @@ class Automata:
 							**{'ε': new_transitions}
 						}
 						state_counter += 2
-						operation_stack.append(Automata(new_states, start_state, end_state))
+						operation_stack.append(Automata(new_states, start_state, end_state, operand._symbols))
 					elif token == "+":
 						operand = operation_stack.pop()	
 						new_states = {
@@ -150,7 +189,7 @@ class Automata:
 						}
 						state_counter += 2
 
-						operation_stack.append(Automata(new_states, start_state, end_state))
+						operation_stack.append(Automata(new_states, start_state, end_state, operand._symbols))
 					elif token == ".":
 						operand_2 = operation_stack.pop()
 						operand_1 = operation_stack.pop()
@@ -162,7 +201,7 @@ class Automata:
 						# End state of operand 1 connects to start state of operand 2
 						new_states[operand_1._final] = {'ε': (operand_2._initial,)}
 
-						operation_stack.append(Automata(new_states, operand_1._initial, operand_2._final))
+						operation_stack.append(Automata(new_states, operand_1._initial, operand_2._final, operand_1._symbols.union(operand_2._symbols)))
 					elif token == "?":
 						operand_1 = operation_stack.pop()
 						# Keep the operands states
@@ -185,7 +224,7 @@ class Automata:
 							**{'ε': (end_state,) + prev_transitions_1}
 						}
 						state_counter += 2
-						operation_stack.append(Automata(new_states, start_state, end_state))	
+						operation_stack.append(Automata(new_states, start_state, end_state, operand_1._symbols))	
 					elif token == "|":
 						operand_2 = operation_stack.pop()
 						operand_1 = operation_stack.pop()
@@ -220,10 +259,11 @@ class Automata:
 							**{'ε': (end_state,) + prev_transitions_2}
 						}
 						state_counter += 2
-						operation_stack.append(Automata(new_states, start_state, end_state))	
+						operation_stack.append(Automata(new_states, start_state, end_state, operand_1._symbols.union(operand_2._symbols)))	
 				else:
 					# Append a base Automata to the operation stack, this state has two initial states with a connection between them
-					operation_stack.append(Automata({state_counter: {token: (state_counter + 1,)}, state_counter + 1: {}}, state_counter, state_counter + 1))
+					operation_stack.append(Automata({state_counter: {token: (state_counter + 1,)}, state_counter + 1: {}}, state_counter, state_counter + 1, {token,}))
+					
 					state_counter += 2
 			
 			return operation_stack[0]

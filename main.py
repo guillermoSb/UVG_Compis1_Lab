@@ -22,5 +22,4 @@ for state in a._states.keys():
             for to in a._states[state][transition]:
                     dot.edge('{}'.format(state), '{}'.format(to), label=transition)
 
-
 dot.render('automaton.gv', view=True)
