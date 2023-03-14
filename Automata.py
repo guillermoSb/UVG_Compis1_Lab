@@ -18,16 +18,27 @@ class Automata:
 		def e_closure(self, s):
 			"""Set of NFA states that are reachable from state s on epsilon transitions"""
 			
-			states = (s,)
+			e_closure = (s,)
 			if 'ε' in self._states[s].keys():
-				states = states + self._states[s]['ε']
-			return states
-
+				e_closure = e_closure + self._states[s]['ε']
+			return e_closure
+		
+		def e_closure_t(self, T):
+			"""Set of NFA states reachable from any s state in T on epsilon transitions"""
+			e_closure_t = T
+			state_stack = list(T)
+			while len(state_stack) > 0:
+				t = state_stack.pop()
+				if 'ε' in self._states[t].keys():
+					for u in self._states[t]['ε']:
+						if u not in e_closure_t:
+							e_closure_t += (u,)
+							state_stack.append(u)
+			return e_closure_t
 
 
 		# Class Methods
-
-
+		
 		@classmethod
 		def _from_regex(self, regex):		
 				"""Creates an Automata from a regex"""
