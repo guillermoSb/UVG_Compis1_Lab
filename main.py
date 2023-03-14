@@ -2,12 +2,10 @@ from Automata import Automata
 from graphviz import Digraph
 
 
-a = Automata._from_regex('b*)a')
+a = Automata._from_regex('b*')
 
 # create a new directed graph
 dot = Digraph(graph_attr={'rankdir': 'LR'})
-
-print(a._states)
 
 # add nodes to the graph
 for state in a._states.keys():
@@ -25,5 +23,4 @@ for state in a._states.keys():
                     dot.edge('{}'.format(state), '{}'.format(to), label=transition)
 
 
-print(a._final)
 dot.render('automaton.gv', view=True)

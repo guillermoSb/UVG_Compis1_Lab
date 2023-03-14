@@ -12,7 +12,22 @@ class Automata:
 		}
 
 		
-		
+		# Instance methods
+
+
+		def e_closure(self, s):
+			"""Set of NFA states that are reachable from state s on epsilon transitions"""
+			
+			states = (s,)
+			if 'ε' in self._states[s].keys():
+				states = states + self._states[s]['ε']
+			return states
+
+
+
+		# Class Methods
+
+
 		@classmethod
 		def _from_regex(self, regex):		
 				"""Creates an Automata from a regex"""
@@ -22,11 +37,13 @@ class Automata:
 				self._postfix = self._postfix_from_regex(regex)	# Convert the regex to postfix
 				return self._states_from_postfix(self._postfix)	# Create the states for the automaton
 
-		def __init__(self, states, initial, final):
+		def __init__(self, states, initial, final, type = 'NFA'):
 				"""Constructor for the Automata class"""				
 				self._states = states
 				self._initial = initial
 				self._final = final
+				self._type = type
+				
 		
 		@classmethod
 		def _check_regex(cls, regex):
@@ -191,7 +208,7 @@ class Automata:
 					state_counter += 2
 			
 			return operation_stack[0]
-
+		
 
 		@classmethod
 		def _postfix_from_regex(cls, regex):
@@ -239,3 +256,5 @@ class Automata:
 					token_stack.append(operator_stack.pop()) # Last part of the algorithm: append remaining operators to the token stack
 				return ''.join(token_stack)	# The output is a string in postfix notation
 				
+
+	
