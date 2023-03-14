@@ -127,12 +127,28 @@ class Automata:
 			counter = 0
 			final_states = []
 			state_labels = {}
+			# TODO: Fix bug state labels are not on order.
 			for state in d_states_marked:
 				state_labels[tuple(sorted(state))] = counter
 				counter += 1
 				if nfa._final in state:
 					final_states.append(tuple(sorted(state)))
 			return Automata(d_transitions, tuple(d_states_marked[0]), final_states, nfa._symbols, 'DFA', state_labels)
+		
+
+		def simulate(self, input):
+			if self._type == 'DFA':
+				current_state = self._initial
+				for s in input:
+					# Check if s is on the symbol list
+					if s not in self._symbols:
+						raise Exception("[Simulation Error] - {} is not on symbol list.".format(s))
+					current_state = tuple(self._states[current_state][s])
+				# Check if the final state is on the final states
+				if current_state not in self._final:
+					raise Exception("[Simulation Error] - {} was not accepted.".format(input))
+				else:
+					return True
 			
 		
 		@classmethod
