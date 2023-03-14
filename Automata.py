@@ -1,3 +1,4 @@
+from graphviz import Digraph
 
 
 class Automata:
@@ -15,13 +16,14 @@ class Automata:
 		# Initializers
 
 
-		def __init__(self, states, initial, final, symbols, type = 'NFA'):
+		def __init__(self, states, initial, final, symbols, type = 'NFA', labels = {}):
 				"""Constructor for the Automata class"""				
 				self._states = states
 				self._initial = initial
 				self._final = final
 				self._type = type
 				self._symbols = symbols
+				self._labels = labels
 
 		
 		# Instance methods
@@ -29,11 +31,7 @@ class Automata:
 
 		def e_closure(self, s):
 			"""Set of NFA states that are reachable from state s on epsilon transitions"""
-			
-			e_closure = (s,)
-			if 'ε' in self._states[s].keys():
-				e_closure = e_closure + self._states[s]['ε']
-			return e_closure
+			return self.e_closure_t((s,))
 		
 
 		def e_closure_t(self, T):
@@ -59,6 +57,43 @@ class Automata:
 			return reachable_states
 		
 
+		def draw(self):
+			# create a new directed graph
+			dot = Digraph(graph_attr={'rankdir': 'LR'})
+			if self._type == 'NFA':
+				# add nodes to the graph
+				for state in self._states.keys():
+						if state == self._final:          
+									dot.node('{}'.format(state), shape="doublecircle")
+						elif  state == self._initial:          
+									dot.node('{}'.format(state), shape="triangle")
+						else:
+									dot.node('{}'.format(state),)
+
+				for state in self._states.keys():
+						for transition in self._states[state]:
+										for to in self._states[state][transition]:
+														dot.edge('{}'.format(state), '{}'.format(to), label=transition)
+			elif self._type == 'DFA':
+				# add nodes to the graph
+				for state in self._states.keys():
+						if state in self._final:          
+									dot.node('{}'.format(self._labels[state]), shape="doublecircle")
+						elif  state == self._initial:          
+									dot.node('{}'.format(self._labels[state]), shape="triangle")
+						else:
+									dot.node('{}'.format(self._labels[state]),)
+
+				for state in self._states.keys():
+						for transition in self._states[state]:
+							to = self._states[state][transition]
+							
+							dot.edge('{}'.format(self._labels[tuple(state)]), '{}'.format(self._labels[tuple(to)]), label=transition)
+
+			dot.render('automaton.gv', view=True)
+
+		
+
 		# Class Methods
 		
 		
@@ -72,10 +107,10 @@ class Automata:
 			d_states_marked = []
 			while len(d_states_unmarked) > 0:
 				# Mark the new state
-				d_state = d_states_unmarked.pop()
+				d_state = tuple(sorted(d_states_unmarked.pop()))
 				d_states_marked.append(set(d_state))
-
 				for input in nfa._symbols:
+					# print("Moving from", d_state, input)	
 					U = set(nfa.e_closure_t(nfa.move(d_state, input)))
 					if U not in d_states_marked:
 						d_states_unmarked.append(tuple(U))
@@ -88,7 +123,16 @@ class Automata:
 						d_transitions[d_state] = {
 							input: U
 						}
-			print(d_transitions)
+			# Create final states and state labels
+			counter = 0
+			final_states = []
+			state_labels = {}
+			for state in d_states_marked:
+				state_labels[tuple(sorted(state))] = counter
+				counter += 1
+				if nfa._final in state:
+					final_states.append(tuple(sorted(state)))
+			return Automata(d_transitions, tuple(d_states_marked[0]), final_states, nfa._symbols, 'DFA', state_labels)
 			
 		
 		@classmethod
