@@ -35,8 +35,16 @@ class Automata:
 							e_closure_t += (u,)
 							state_stack.append(u)
 			return e_closure_t
+		
+		def move(self,T,a):
+			"""Set of NFA states that can be reached from any state in T using the symbol a"""
+			reachable_states = ()
 
-
+			for t in T:
+				if a in self._states[t].keys():
+					reachable_states += self._states[t][a]
+			return reachable_states
+		
 		# Class Methods
 		
 		@classmethod

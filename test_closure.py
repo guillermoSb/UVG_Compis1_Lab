@@ -22,3 +22,14 @@ def test_e_closure_t():
 		assert len(e_closure_t) == len(expected)
 		for e in expected:
 				assert e in e_closure_t
+
+def test_move():
+		# Arrange
+		a = Automata._from_regex('b*')
+		expected = (1,)
+		# Act
+		move = a.move((0,3), 'b')
+		# Assert
+		assert len(move) == len(expected)
+		for e in expected:
+				assert e in move
