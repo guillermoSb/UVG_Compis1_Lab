@@ -355,26 +355,42 @@ class Automata:
 			"""Creates a DFA automata from a regex"""
 			self._regex = regex.replace(' ', '')	# Remove spaces from the regex
 			self._check_regex(regex)	# Check that the regex is valid
-			regex += '#'
-			tokens = list(regex)
-			root = Node(None, None, None, None)
-			current_parent = root
+			# 1. Expand regex
+			self._regex = self._expand_regex(self._regex)
+			# 2. Build syntax tree
 
-			for token in tokens:
-				if token not in self.operators.keys() and token not in ['(', ')']:
-					leaf = Node(None,None, token, current_parent)
-					current_parent._right_child = leaf
-				elif token == '(':
-					group_node = Node(None,None,None,current_parent)
-					current_parent = group_node
-				elif token == ')':
-					current_parent = current_parent._parent
-				else:
-					branch = Node(None, None, token, current_parent)
-					current_parent._left_child = branch
-					current_parent = branch
+		
+		@classmethod
+		def _tree_from_regex(cls, regex):
+			"""Creates a tree from a given regex"""
 			
+			# 1. Create the root
+			root = Node(None, None, None, None)
+			# 2. Iterate on the regex
+			current_node = root
+			for a in regex:
+				if a not in cls.operators.keys() and a not in ['(', ')']:
+					# Append to the leaf child
+					if current_node.value != '|':
+						node = Node(None, None, a, current_node)
+						current_node.right_child = node
+					elif current_node.value == "|":
+						node = Node(None, None, a, current_node)
+						current_node.left_child = node
 						
+				if a == '|':
+					current_node.value = '|'
+				if a == ".":
+					new_root = Node(current_node, None, None, None)
+					current_node.parent = new_root
+					if current_node.value == None:
+						current_node.value = '.'
+					current_node = new_root
+				
+			current_node.value = '.'	# Last concatenation
+			return current_node
+		
+		
 		@classmethod
 		def _check_regex(cls, regex):
 			"""Checks that the regex is valid, throws an error if invalid."""
