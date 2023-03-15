@@ -126,55 +126,85 @@ class Automata:
 			NF = []
 			for final_state in self._final:
 				F.append(final_state)
-			
 			for state in self._states.keys():
 				if state not in F:
 					NF.append(state)
-			
-			partition = [set(F), set(NF)]
-			new_partition = [set(F.copy()), set(NF.copy())]	# List of sets of tuples
-			counter = 0
-			partitions = [
-				new_partition.copy()
-			]
-			while counter < 5:
-				if len(partitions) > 2:
-					print(partitions[-1])
-					print(partitions[-2])
+			partition = [tuple(F), tuple(NF)]
+			new_partition = [tuple(F.copy()), tuple(NF.copy())]	# List of sets of tuples
+		
+			while  True:
 				for group in partition:
-					# Skip groups with length of 1
 					if len(group) == 1:
 						continue
-					# Partition the group such that two states are on the same group if they go to the same state for all inputs
-					new_group = []	# List of sets of tuples
-					items_to_group = group.copy()	# Items to group
-					# All items need to be grouped
-					while len(items_to_group) > 0:
-						item = items_to_group.pop()
-						g = {item,}	# New Sub Group
-						for other in items_to_group:
-							skip_item = False
-							for symbol in self._symbols:
-								if Automata._group_for_item(partition, self._states[item][symbol]) != Automata._group_for_item(partition, self._states[other][symbol]):
-									skip_item = True
-									break
-							if not skip_item:	
-								g.add(other)
-						new_group.append(g)	
-						items_to_group = [group for group in items_to_group if group not in g]
+					new_group = self.create_partiion(group, partition.copy())
+					
+					if len(new_group[1]) == 0:
+						continue
+					idx = new_partition.index(group)
+					del new_partition[idx]
+					for g in new_group:
+						new_partition.append(g)
+				
+				if partition == new_partition:
+					break
+				partition = new_partition
+			
+			# Create the states
+			for group in partition:
+				if len(group) == 1:
+					continue
+				representative = group[0]
+				for i in range(1, len(group)):
+					del self._states[group[i]]
+					for s in self._states.keys():
+						for a in self._symbols:
+							if self._states[s][a] == group[i]:
+								self._states[s][a] = representative
+		
+
+		def create_partiion(self, group, groups):
+			# Partition group in subgroups
+			distringuishable = {}
+			for s in group:
+					for t in group:
+						for a in self._symbols:
+							dest_s = self._states[s][a]
+							dest_t = self._states[t][a]
+							# Find if the destinations fall on the same group
+							for i in range(0, len(groups)):
+								if dest_s in groups[i]:
+									dest_s_group = i
+								if dest_t in groups[i]:
+									dest_t_group = i
+							if dest_s_group != dest_t_group:
+								distringuishable[(s,t)] = True
+								break
+						if (s,t) not in distringuishable:
+							distringuishable[(s,t)] = False
+
+			# Build the groups
+			new_groups = []
+			for pair in distringuishable.keys():
+				s, t = pair
+				if distringuishable[pair]:
+					if len(new_groups) == 0:
+						new_groups.append(tuple())
+						new_groups.append(tuple())
+					if t not in new_groups[1] and t not in new_groups[0]:
+						new_groups[1] = new_groups[1] + (t,)
+				else:
+					if len(new_groups) == 0:
+						new_groups.append(tuple())
+						new_groups.append(tuple())
+					if s not in new_groups[1] and s not in new_groups[0]:
+						new_groups[0] = new_groups[0] + (s,)
+					if t not in new_groups[1] and t not in new_groups[0]:
+						new_groups[0] = new_groups[0] + (t,)
+					
+			return new_groups
 						
-					part_index = new_partition.index(group)		
-					new_partition.pop(part_index)
-					new_partition = new_partition + new_group
 
-				partition = new_partition		
-				partitions.append(partition)				
-				counter += 1
-								
-
-		
 		# Class Methods
-		
 
 		@classmethod
 		def _group_for_item(self, groups, item):
