@@ -16,14 +16,14 @@ class Automata:
 		# Initializers
 
 
-		def __init__(self, states, initial, final, symbols, type = 'NFA', labels = {}):
+		def __init__(self, states, initial, final, symbols, type = 'NFA'):
 				"""Constructor for the Automata class"""				
 				self._states = states
 				self._initial = initial
 				self._final = final
 				self._type = type
 				self._symbols = symbols
-				self._labels = labels
+
 
 		
 		# Instance methods
@@ -79,17 +79,16 @@ class Automata:
 				# add nodes to the graph
 				for state in self._states.keys():
 						if state in self._final:          
-									dot.node('{}'.format(self._labels[state]), shape="doublecircle")
+									dot.node('{}'.format(state), shape="doublecircle")
 						elif  state == self._initial:          
-									dot.node('{}'.format(self._labels[state]), shape="triangle")
+									dot.node('{}'.format(state), shape="triangle")
 						else:
-									dot.node('{}'.format(self._labels[state]),)
+									dot.node('{}'.format(state),)
 
 				for state in self._states.keys():
 						for transition in self._states[state]:
 							to = self._states[state][transition]
-							
-							dot.edge('{}'.format(self._labels[tuple(state)]), '{}'.format(self._labels[tuple(to)]), label=transition)
+							dot.edge('{}'.format(state), '{}'.format(to), label=transition)
 
 			dot.render('automaton.gv', view=True)
 
@@ -102,7 +101,7 @@ class Automata:
 					# Check if s is on the symbol list
 					if s not in self._symbols:
 						raise Exception("[Simulation Error] - {} is not on symbol list.".format(s))
-					current_state = tuple(self._states[current_state][s])
+					current_state = self._states[current_state][s]
 				# Check if the final state is on the final states
 				if current_state not in self._final:
 					raise Exception("[Simulation Error] - {} was not accepted.".format(input))
@@ -191,6 +190,14 @@ class Automata:
 			d_transitions = {}	# DFA transitions will be stored here
 			d_states_unmarked = [nfa.e_closure(nfa._initial),]
 			d_states_marked = []
+
+			counter = 0
+			labels = {}
+			labels[tuple(sorted(d_states_unmarked[0]))] = counter
+			counter += 1
+			final_states = []
+			
+
 			while len(d_states_unmarked) > 0:
 				# Mark the new state
 				d_state = tuple(sorted(d_states_unmarked.pop()))
@@ -198,29 +205,23 @@ class Automata:
 					d_states_marked.append(set(d_state))
 				for input in nfa._symbols:
 					U = set(nfa.e_closure_t(nfa.move(d_state, input)))
+					if tuple(sorted(U)) not in labels:
+						labels[tuple(sorted(U))] = counter
+						counter += 1
 					if U not in d_states_marked:
 						d_states_unmarked.append(tuple(U))
-					if d_state in d_transitions.keys():
-						d_transitions[d_state] = {
-							**d_transitions[d_state],
-							input: U
-						}
-					else: 
-						d_transitions[d_state] = {
-							input: U
-						}
-				
-			# Create final states and state labels
-			counter = 0
-			final_states = []
-			state_labels = {}
+					if labels[d_state] not in d_transitions:
+						d_transitions[labels[d_state]] = {}
+					d_transitions[labels[d_state]] = {
+							**d_transitions[labels[d_state]],
+							input: labels[tuple(sorted(U))]
+					}
 			for state in d_states_marked:
-
-				state_labels[tuple(sorted(state))] = counter
 				counter += 1
 				if nfa._final in state:
-					final_states.append(tuple(sorted(state)))
-			return Automata(d_transitions, tuple(d_states_marked[0]), final_states, nfa._symbols, 'DFA', state_labels)
+					final_states.append(labels[tuple(sorted(state))])
+			
+			return Automata(d_transitions, 0, final_states, nfa._symbols, 'DFA')
 		
 
 
