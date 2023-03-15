@@ -1,4 +1,5 @@
 from graphviz import Digraph
+from Node import Node
 
 
 class Automata:
@@ -252,19 +253,102 @@ class Automata:
 					final_states.append(labels[tuple(sorted(state))])
 			
 			return Automata(d_transitions, 0, final_states, nfa._symbols, 'DFA')
-		
-
-
 			
 		
 		@classmethod
 		def _from_regex(self, regex):		
 				"""Creates an Automata from a regex"""
-
 				self._regex = regex.replace(' ', '')	# Remove spaces from the regex
 				self._check_regex(regex)	# Check that the regex is valid
 				self._postfix = self._postfix_from_regex(regex)	# Convert the regex to postfix
 				return self._states_from_postfix(self._postfix)	# Create the states for the automaton
+
+
+		@classmethod
+		def _expand_regex(self, regex):
+			"""Expands a regex"""
+			regex = self._add_concat_to_regex(regex)
+			regex = list(regex)
+			new_regex = []
+			for i in range(0, len(regex)):
+				# Implement the ? identity
+				if regex[i] == "?":
+					# Check if the prev char is not a )
+					if regex[i - 1] != ")":
+						operand = new_regex.pop(len(new_regex) - 1)
+						new_regex += "({}|ε)".format(operand)
+					else:
+						operand = []
+						j = i - 1
+						count = 0
+						while True:
+							operand.insert(0, regex[j])
+							if regex[j] == ")":
+								count += 1
+							elif regex[j] == "(":
+								count -= 1
+							j -= 1
+							if count == 0:
+								break
+						end = len(new_regex)
+						start = len(new_regex) - 1
+						count = 0
+						while True:
+							print(regex[start])
+							if regex[start] == ")":
+								count += 1
+							elif regex[start] == "(":
+								count -= 1
+							if count == 0:
+								break
+							start -= 1
+						del new_regex[start: end + 1]
+						
+						operand = ''.join(operand)
+						print(operand)
+						new_regex.append("({}|ε)".format(operand))
+				elif regex[i] == "+":
+					# Check if the prev char is not a )
+					if regex[i - 1] != ")":
+						operand = new_regex.pop(len(new_regex) - 1)
+						new_regex += "{}.{}*".format(operand, operand)
+					else:
+						operand = []
+						j = i - 1
+						count = 0
+						while True:
+							operand.insert(0, regex[j])
+							if regex[j] == ")":
+								count += 1
+							elif regex[j] == "(":
+								count -= 1
+							j -= 1
+							if count == 0:
+								break
+							
+						end = len(new_regex)
+						start = len(new_regex) - 1
+						count = 0
+						while True:
+							print(regex[start])
+							if regex[start] == ")":
+								count += 1
+							elif regex[start] == "(":
+								count -= 1
+							if count == 0:
+								break
+							start -= 1
+						del new_regex[start: end + 1]
+						del new_regex[start: end + 1]
+						operand = ''.join(operand)
+						new_regex += "{}.{}*".format(operand, operand)
+				else:
+					new_regex.append(regex[i])
+			new_regex.append('.#')
+			return ''.join(new_regex)
+
+
+
 
 		@classmethod
 		def _from_regex_dfa(self, regex):
@@ -272,9 +356,25 @@ class Automata:
 			self._regex = regex.replace(' ', '')	# Remove spaces from the regex
 			self._check_regex(regex)	# Check that the regex is valid
 			regex += '#'
-			self._postfix = self._postfix_from_regex(regex)	# Convert the regex to postfix
-			print(self._postfix)
-		
+			tokens = list(regex)
+			root = Node(None, None, None, None)
+			current_parent = root
+
+			for token in tokens:
+				if token not in self.operators.keys() and token not in ['(', ')']:
+					leaf = Node(None,None, token, current_parent)
+					current_parent._right_child = leaf
+				elif token == '(':
+					group_node = Node(None,None,None,current_parent)
+					current_parent = group_node
+				elif token == ')':
+					current_parent = current_parent._parent
+				else:
+					branch = Node(None, None, token, current_parent)
+					current_parent._left_child = branch
+					current_parent = branch
+			
+						
 		@classmethod
 		def _check_regex(cls, regex):
 			"""Checks that the regex is valid, throws an error if invalid."""
@@ -442,17 +542,22 @@ class Automata:
 			return operation_stack[0]
 		
 
+
 		@classmethod
-		def _postfix_from_regex(cls, regex):
-				"""Converts a regex from postfix"""
-				# Add the . to the regex to handle concatenation
-				# TODO: Check how to handle concatenation without any special character
-				i = 0
-				while i < len(regex):
+		def _add_concat_to_regex(cls, regex):
+			i = 0
+			while i < len(regex):
 					if regex[i] not in ['|', '(', '.'] and i < len(regex) - 1:
 						if regex[i + 1] not in cls.operators and regex[i + 1] != ')':
 							regex = regex[:i + 1] + '.' + regex[i + 1:]
 					i += 1
+			return regex
+
+		@classmethod
+		def _postfix_from_regex(cls, regex):
+				"""Converts a regex from postfix"""
+				# Add the . to the regex to handle concatenation
+				regex = cls._add_concat_to_regex(regex)
 				
 				# Stack for tokens
 				token_stack = []
