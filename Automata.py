@@ -120,10 +120,68 @@ class Automata:
 					return True
 				else:
 					raise Exception("[Simulation Error] - {} was not accepted.".format(input))
-		
+				
+
+		def minimize(self):
+			F = []
+			NF = []
+			for final_state in self._final:
+				F.append(final_state)
+			
+			for state in self._states.keys():
+				if state not in F:
+					NF.append(state)
+			
+			partition = [set(F), set(NF)]
+			new_partition = [set(F.copy()), set(NF.copy())]	# List of sets of tuples
+			counter = 0
+			partitions = [
+				new_partition.copy()
+			]
+			while counter < 5:
+				if len(partitions) > 2:
+					print(partitions[-1])
+					print(partitions[-2])
+				for group in partition:
+					# Skip groups with length of 1
+					if len(group) == 1:
+						continue
+					# Partition the group such that two states are on the same group if they go to the same state for all inputs
+					new_group = []	# List of sets of tuples
+					items_to_group = group.copy()	# Items to group
+					# All items need to be grouped
+					while len(items_to_group) > 0:
+						item = items_to_group.pop()
+						g = {item,}	# New Sub Group
+						for other in items_to_group:
+							skip_item = False
+							for symbol in self._symbols:
+								if Automata._group_for_item(partition, self._states[item][symbol]) != Automata._group_for_item(partition, self._states[other][symbol]):
+									skip_item = True
+									break
+							if not skip_item:	
+								g.add(other)
+						new_group.append(g)	
+						items_to_group = [group for group in items_to_group if group not in g]
+						
+					part_index = new_partition.index(group)		
+					new_partition.pop(part_index)
+					new_partition = new_partition + new_group
+
+				partition = new_partition		
+				partitions.append(partition)				
+				counter += 1
+								
+
 		
 		# Class Methods
 		
+
+		@classmethod
+		def _group_for_item(self, groups, item):
+			for g in groups:
+				if tuple(item) in g:
+					return g
 		
 		@classmethod
 		def _dfa_from_nfa(self, nfa):
@@ -136,7 +194,8 @@ class Automata:
 			while len(d_states_unmarked) > 0:
 				# Mark the new state
 				d_state = tuple(sorted(d_states_unmarked.pop()))
-				d_states_marked.append(set(d_state))
+				if set(d_state) not in d_states_marked:
+					d_states_marked.append(set(d_state))
 				for input in nfa._symbols:
 					U = set(nfa.e_closure_t(nfa.move(d_state, input)))
 					if U not in d_states_marked:
@@ -150,12 +209,13 @@ class Automata:
 						d_transitions[d_state] = {
 							input: U
 						}
+				
 			# Create final states and state labels
 			counter = 0
 			final_states = []
 			state_labels = {}
-			# TODO: Fix bug state labels are not on order.
 			for state in d_states_marked:
+
 				state_labels[tuple(sorted(state))] = counter
 				counter += 1
 				if nfa._final in state:
