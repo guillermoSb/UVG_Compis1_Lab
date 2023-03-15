@@ -266,8 +266,14 @@ class Automata:
 				self._postfix = self._postfix_from_regex(regex)	# Convert the regex to postfix
 				return self._states_from_postfix(self._postfix)	# Create the states for the automaton
 
-		
-				
+		@classmethod
+		def _from_regex_dfa(self, regex):
+			"""Creates a DFA automata from a regex"""
+			self._regex = regex.replace(' ', '')	# Remove spaces from the regex
+			self._check_regex(regex)	# Check that the regex is valid
+			regex += '#'
+			self._postfix = self._postfix_from_regex(regex)	# Convert the regex to postfix
+			print(self._postfix)
 		
 		@classmethod
 		def _check_regex(cls, regex):
@@ -278,7 +284,8 @@ class Automata:
 			
 			# Check that there are no two operators in a row
 			for i in range(0, len(regex)):
-
+				if regex[i] == "#":
+					raise Exception("[REGEX ERROR] Operator # is not allowed.")			
 				if regex[i] in cls.operators.keys() and i < len(regex) - 1:
 					if regex[i+1] in ['*', '?', '+']:
 						raise Exception("[REGEX ERROR] There are two operators in a row.")			
