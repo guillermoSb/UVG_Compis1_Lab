@@ -1,5 +1,27 @@
 from Automata import Automata
 
 
-a = Automata._from_regex_dfa('(a|b)*abb')
-print(a)
+# Act
+a = Automata._from_regex_dfa('abb')
+a.draw()
+# print(tree.value)
+# print(tree.right_child.value)
+
+# print(tree.left_child.value)
+# print(tree.left_child.right_child.value)
+
+
+# print(tree.left_child.left_child.value)
+# print(tree.left_child.left_child.right_child.value)
+
+# print(tree.left_child.left_child.left_child.value)
+# print(tree.left_child.left_child.left_child.right_child.value)
+
+# print(tree.left_child.left_child.left_child.left_child.value)
+# print(tree.left_child.left_child.left_child.left_child.followpos())
+
+
+
+
+
+

@@ -4,9 +4,8 @@ from Automata import Automata
 def test_tree_1():
 	# Arrange
 	regex = Automata._expand_regex('a.b.c')
-	print(regex)
 	# Act
-	tree = Automata._tree_from_regex(regex)
+	tree = Automata._tree_from_regex(regex)[0]
 	# Assert
 	assert tree.value == "."
 	
@@ -23,7 +22,7 @@ def test_tree_2():
 	# Arrange
 	regex = Automata._expand_regex('ab')
 	# Act
-	tree = Automata._tree_from_regex(regex)
+	tree = Automata._tree_from_regex(regex)[0]
 	# Assert
 	assert tree.value == "."
 	assert tree.right_child.value == "#"
@@ -38,7 +37,7 @@ def test_simple_or():
 	# Arrange
 	regex = Automata._expand_regex('a|b')
 	# Act
-	tree = Automata._tree_from_regex(regex)
+	tree = Automata._tree_from_regex(regex)[0]
 	# Assert
 	assert tree.value == "."
 	assert tree.right_child.value == "#"
@@ -54,7 +53,7 @@ def test_tree_3():
 	# Arrange
 	regex = Automata._expand_regex('ab*')
 	# Act
-	tree = Automata._tree_from_regex(regex)
+	tree = Automata._tree_from_regex(regex)[0]
 	# Assert
 	assert tree.value == "."
 	assert tree.right_child.value == "#"
@@ -72,7 +71,7 @@ def test_tree_4():
 	# Arrange
 	regex = ('(a|ε).#')
 	# Act
-	tree = Automata._tree_from_regex(regex)
+	tree = Automata._tree_from_regex(regex)[0]
 	# Assert
 	
 	assert tree.value == "."

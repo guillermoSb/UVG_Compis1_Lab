@@ -358,18 +358,66 @@ class Automata:
 			self._check_regex(regex)	# Check that the regex is valid
 			# 1. Expand regex
 			self._regex = self._expand_regex(self._regex)
+			print(self._regex)
 			# 2. Build syntax tree
-
+			tree, nodes = Automata._tree_from_regex(self._regex)
+			label_values = {}
+			followpos = {}
+			for n in nodes:
+				if n.label is not None:
+					label_values[n.label] = n.value
+				if n.value in ['.', '*']:
+					nodefollowpos = n.followpos()
+					for k in nodefollowpos:
+							if k not in followpos:
+								followpos[k] = tuple()
+							followpos[k] = tuple(sorted(followpos[k] + nodefollowpos[k]))
+			
+			followpos[len(label_values) - 1] = tuple()
+			# Create transition table
+			key_counter = 0
+			keys = {():len(label_values) - 1}
+			d_states = {} # Key<int> value {Key<string>, value <int>}	
+			keys[followpos[0]] = key_counter
+			key_counter += 1
+			unsearched = [followpos[0]]
+			marked = []
+			final_states = tuple()
+			while len(unsearched) > 0:
+				item = unsearched.pop()
+				marked.append(item)
+				# Create a new states
+				for s in set(label_values.values()):
+					if s == "#":
+						continue
+					new_state = tuple()
+					for k in item:
+						if s in label_values[k]:
+							new_state += followpos[k]
+					if new_state not in marked and len(new_state) > 0:
+						keys[new_state] = key_counter
+						key_counter += 1
+						unsearched.append(new_state)
+					
+					if keys[item] not in d_states:
+						d_states[keys[item]] = {}
+						if len(label_values) - 1 in item:
+							final_states += (keys[item],)
+					d_states[keys[item]][s]	= keys[new_state]
+		
+			symbols = set(label_values.values()).difference({'#',})
+			return Automata(d_states, 0, final_states, symbols, 'DFA')
 		
 		@classmethod
 		def _tree_from_regex(cls, regex):
 			"""Creates a tree from a given regex"""
 			# 1. Create the root
 			root = Node(None, None, None, None)
+			nodes = []
 			# 2. Iterate on the regex
 			current_node = root
-
 			leaf_counter = 0
+			nodes.append(current_node)
 			
 			for a in regex:
 				if a == '(':
@@ -377,6 +425,7 @@ class Automata:
 					current_node.left_child = group
 					group.parent = current_node
 					current_node = group
+					nodes.append(group)
 				elif a == ')':
 					current_node = current_node.parent
 					
@@ -384,6 +433,7 @@ class Automata:
 					if current_node.value == a:
 						# Reparenting
 						node = Node(current_node, None, a, current_node.parent)
+						nodes.append(node)
 						current_node.parent.left_child = node
 						current_node.parent = node
 						current_node = node
@@ -392,16 +442,29 @@ class Automata:
 
 				elif a == '*':
 					# Wrap the current node with a *
-					if current_node.value in ['|', '.']:
+					if current_node.value:
 						node = Node(None, None, a, current_node)
+						nodes.append(node)
 						# Wrap the right child of the current node
 						to_wrap = current_node.right_child
 						node.left_child = to_wrap
 						to_wrap.parent = node
-						current_node.right_child = node				
+						current_node.right_child = node
+						nodefollowpos = node.followpos()
+					elif current_node.left_child.value:
+						node = Node(None, None, a, current_node)
+						nodes.append(node)
+						to_wrap = current_node.left_child
+						node.left_child = to_wrap
+						to_wrap.parent = node
+						current_node.left_child = node
+						nodefollowpos = node.followpos()
+					
+					
 				
 				elif a not in cls.operators.keys() and a not in ['(', ')']:
 					node = Node(None,None, a, None)
+					nodes.append(node)
 					node.label = leaf_counter
 					leaf_counter += 1
 					if current_node.left_child is None:
@@ -412,9 +475,7 @@ class Automata:
 						# If the left child is not empty and the current node has a .
 						current_node.right_child = node
 						node.parent = current_node
-						
-			
-			return current_node
+			return current_node, nodes
 		
 		
 		@classmethod
@@ -633,7 +694,4 @@ class Automata:
 						operator_stack.append(token)	# Append the current operator to the operator stack
 				while len(operator_stack) > 0:
 					token_stack.append(operator_stack.pop()) # Last part of the algorithm: append remaining operators to the token stack
-				return ''.join(token_stack)	# The output is a string in postfix notation
-				
-
-	
+				return ''.join(token_stack)	# The output is a string in postfix notation			
