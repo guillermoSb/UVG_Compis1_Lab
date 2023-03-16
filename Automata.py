@@ -364,7 +364,6 @@ class Automata:
 		@classmethod
 		def _tree_from_regex(cls, regex):
 			"""Creates a tree from a given regex"""
-			
 			# 1. Create the root
 			root = Node(None, None, None, None)
 			# 2. Iterate on the regex

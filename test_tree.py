@@ -66,3 +66,17 @@ def test_tree_3():
 	# assert tree.left_child.left_child.value == "a"
 	
 	assert tree.parent == None
+
+
+def test_tree_4():
+	# Arrange
+	regex = ('(a|ε).#')
+	# Act
+	tree = Automata._tree_from_regex(regex)
+	# Assert
+	
+	assert tree.value == "."
+	assert tree.right_child.value == "#"
+	assert tree.left_child.value == "|"
+	assert tree.left_child.left_child.value == "a"
+	assert tree.left_child.right_child.value == "ε"
