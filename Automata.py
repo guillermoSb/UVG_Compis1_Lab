@@ -344,7 +344,8 @@ class Automata:
 						new_regex += "{}.{}*".format(operand, operand)
 				else:
 					new_regex.append(regex[i])
-			new_regex.append('.#')
+			new_regex.insert(0, '(')
+			new_regex.append(').#')
 			return ''.join(new_regex)
 
 
@@ -368,26 +369,48 @@ class Automata:
 			root = Node(None, None, None, None)
 			# 2. Iterate on the regex
 			current_node = root
+			
 			for a in regex:
-				if a not in cls.operators.keys() and a not in ['(', ')']:
-					# Append to the leaf child
-					if current_node.value != '|':
+				if a == '(':
+					group = Node(None,None,None,None)
+					current_node.left_child = group
+					group.parent = current_node
+					current_node = group
+				elif a == ')':
+					current_node = current_node.parent
+					
+				elif a == '.' or a == '|':
+					if current_node.value == a:
+						# Reparenting
+						node = Node(current_node, None, a, current_node.parent)
+						current_node.parent.left_child = node
+						current_node.parent = node
+						current_node = node
+					else:
+						current_node.value = a
+
+				elif a == '*':
+					# Wrap the current node with a *
+					if current_node.value in ['|', '.']:
 						node = Node(None, None, a, current_node)
-						current_node.right_child = node
-					elif current_node.value == "|":
-						node = Node(None, None, a, current_node)
-						current_node.left_child = node
-						
-				if a == '|':
-					current_node.value = '|'
-				if a == ".":
-					new_root = Node(current_node, None, None, None)
-					current_node.parent = new_root
-					if current_node.value == None:
-						current_node.value = '.'
-					current_node = new_root
+						# Wrap the right child of the current node
+						to_wrap = current_node.right_child
+						node.left_child = to_wrap
+						to_wrap.parent = node
+						current_node.right_child = node				
 				
-			current_node.value = '.'	# Last concatenation
+				elif a not in cls.operators.keys() and a not in ['(', ')']:
+					node = Node(None,None, a, None)
+					if current_node.left_child is None:
+						# If the current node left child is empty
+						current_node.left_child = node
+						node.parent = current_node
+					elif current_node.value in ['.', '|']:
+						# If the left child is not empty and the current node has a .
+						current_node.right_child = node
+						node.parent = current_node
+						
+			
 			return current_node
 		
 		

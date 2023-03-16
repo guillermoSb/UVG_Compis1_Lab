@@ -6,7 +6,7 @@ def test_expand():
 	# Act
 	r = Automata._expand_regex(r)
 	# Assert
-	assert r == "((a|b)|ε).b.#"
+	assert r == "(((a|b)|ε).b).#"
 
 def test_expand_2():
 	# Arrange
@@ -14,7 +14,7 @@ def test_expand_2():
 	# Act
 	r = Automata._expand_regex(r)
 	# Assert
-	assert r == "(a|ε).b.#"
+	assert r == "((a|ε).b).#"
 
 def test_expand_3():
 	# Arrange
@@ -22,7 +22,7 @@ def test_expand_3():
 	# Act
 	r = Automata._expand_regex(r)
 	# Assert
-	assert r == "(a|b).(a|b)*.a.b.(c|ε).#"
+	assert r == "((a|b).(a|b)*.a.b.(c|ε)).#"
 
 def test_expand_4():
 	# Arrange
@@ -30,7 +30,7 @@ def test_expand_4():
 	# Act
 	r = Automata._expand_regex(r)
 	# Assert
-	assert r == "a.a*.b.#"
+	assert r == "(a.a*.b).#"
 
 def test_expand_5():
 	# Arrange
@@ -38,7 +38,7 @@ def test_expand_5():
 	# Act
 	r = Automata._expand_regex(r)
 	# Assert
-	assert r == "(a.(b.c)).(a.(b.c))*.#"
+	assert r == "((a.(b.c)).(a.(b.c))*).#"
 
 
 def test_expand_6():
@@ -47,4 +47,4 @@ def test_expand_6():
 	# Act
 	r = Automata._expand_regex(r)
 	# Assert
-	assert r == "((a.(b.c))|ε).#"
+	assert r == "(((a.(b.c))|ε)).#"
