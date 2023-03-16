@@ -368,6 +368,8 @@ class Automata:
 			root = Node(None, None, None, None)
 			# 2. Iterate on the regex
 			current_node = root
+
+			leaf_counter = 0
 			
 			for a in regex:
 				if a == '(':
@@ -400,6 +402,8 @@ class Automata:
 				
 				elif a not in cls.operators.keys() and a not in ['(', ')']:
 					node = Node(None,None, a, None)
+					node.label = leaf_counter
+					leaf_counter += 1
 					if current_node.left_child is None:
 						# If the current node left child is empty
 						current_node.left_child = node
