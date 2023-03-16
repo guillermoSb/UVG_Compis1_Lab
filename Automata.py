@@ -383,9 +383,9 @@ class Automata:
 			unsearched = [followpos[0]]
 			marked = []
 			final_states = tuple()
+			print(label_values)
 			while len(unsearched) > 0:
 				item = unsearched.pop()
-				marked.append(item)
 				# Create a new states
 				for s in set(label_values.values()):
 					if s == "#":
@@ -398,7 +398,6 @@ class Automata:
 						keys[new_state] = key_counter
 						key_counter += 1
 						unsearched.append(new_state)
-					
 					if keys[item] not in d_states:
 						d_states[keys[item]] = {}
 						if len(label_values) - 1 in item:

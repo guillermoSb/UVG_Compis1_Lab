@@ -2,7 +2,7 @@ from Automata import Automata
 
 
 # Act
-a = Automata._from_regex_dfa('abb')
+a = Automata._from_regex_dfa('a')
 a.draw()
 # print(tree.value)
 # print(tree.right_child.value)
