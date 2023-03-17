@@ -378,21 +378,24 @@ class Automata:
 			key_counter = 0
 			keys = {():len(label_values) - 1}
 			d_states = {} # Key<int> value {Key<string>, value <int>}	
-			keys[followpos[0]] = key_counter
+			keys[tree.firstpos()] = key_counter
 			key_counter += 1
-			unsearched = [followpos[0]]
+			unsearched = [tree.firstpos()]
 			marked = []
 			final_states = tuple()
+			print(label_values)
 			while len(unsearched) > 0:
 				item = unsearched.pop()
 				marked.append(item)
 				# Create a new states
 				for s in set(label_values.values()):
+					add_state = False
 					if s == "#":
 						continue
 					new_state = tuple()
 					for k in item:
 						if s in label_values[k]:
+							add_state = True
 							new_state += followpos[k]
 					if new_state not in marked and len(new_state) > 0:
 						keys[new_state] = key_counter
@@ -401,9 +404,11 @@ class Automata:
 					
 					if keys[item] not in d_states:
 						d_states[keys[item]] = {}
+						print(item)
 						if len(label_values) - 1 in item:
 							final_states += (keys[item],)
-					d_states[keys[item]][s]	= keys[new_state]
+					if add_state:
+						d_states[keys[item]][s]	= keys[new_state]
 		
 			symbols = set(label_values.values()).difference({'#',})
 			return Automata(d_states, 0, final_states, symbols, 'DFA')
