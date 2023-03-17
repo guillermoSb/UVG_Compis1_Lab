@@ -294,7 +294,6 @@ class Automata:
 						start = len(new_regex) - 1
 						count = 0
 						while True:
-							print(regex[start])
 							if regex[start] == ")":
 								count += 1
 							elif regex[start] == "(":
@@ -303,9 +302,7 @@ class Automata:
 								break
 							start -= 1
 						del new_regex[start: end + 1]
-						
 						operand = ''.join(operand)
-						print(operand)
 						new_regex.append("({}|ε)".format(operand))
 				elif regex[i] == "+":
 					# Check if the prev char is not a )
@@ -358,7 +355,6 @@ class Automata:
 			self._check_regex(regex)	# Check that the regex is valid
 			# 1. Expand regex
 			self._regex = self._expand_regex(self._regex)
-			print(self._regex)
 			# 2. Build syntax tree
 			tree, nodes = Automata._tree_from_regex(self._regex)
 			label_values = {}
@@ -378,32 +374,36 @@ class Automata:
 			key_counter = 0
 			keys = {():len(label_values) - 1}
 			d_states = {} # Key<int> value {Key<string>, value <int>}	
-			keys[followpos[0]] = key_counter
+			keys[tree.firstpos()] = key_counter
 			key_counter += 1
-			unsearched = [followpos[0]]
+			unsearched = [tree.firstpos()]
 			marked = []
 			final_states = tuple()
-			print(label_values)
+			
 			while len(unsearched) > 0:
 				item = unsearched.pop()
 				# Create a new states
-				for s in set(label_values.values()):
+				for s in sorted(set(label_values.values())):
 					if s == "#":
 						continue
 					new_state = tuple()
+					add_state = False
 					for k in item:
 						if s in label_values[k]:
+							add_state = True
 							new_state += followpos[k]
 					if new_state not in marked and len(new_state) > 0:
 						keys[new_state] = key_counter
 						key_counter += 1
 						unsearched.append(new_state)
 					if keys[item] not in d_states:
+						marked.append(item)
 						d_states[keys[item]] = {}
 						if len(label_values) - 1 in item:
 							final_states += (keys[item],)
-					d_states[keys[item]][s]	= keys[new_state]
-		
+					if add_state:
+						d_states[keys[item]][s]	= keys[new_state]
+			
 			symbols = set(label_values.values()).difference({'#',})
 			return Automata(d_states, 0, final_states, symbols, 'DFA')
 		
@@ -417,7 +417,6 @@ class Automata:
 			current_node = root
 			leaf_counter = 0
 			nodes.append(current_node)
-			
 			for a in regex:
 				if a == '(':
 					group = Node(None,None,None,None)
@@ -426,6 +425,15 @@ class Automata:
 					current_node = group
 					nodes.append(group)
 				elif a == ')':
+					if current_node.value is None and current_node.right_child is None and current_node.left_child.value is not None and current_node.left_child.value is not ['|', '.', '*', '(', ')']:
+						current_node.value = current_node.left_child.value
+						current_node.label = current_node.left_child.label
+						idx = nodes.index(current_node.left_child)
+						nodes.pop(idx)
+						current_node.left_child = None
+					elif current_node.value is None:
+						current_node.value = '.'
+					
 					current_node = current_node.parent
 					
 				elif a == '.' or a == '|':
@@ -449,7 +457,6 @@ class Automata:
 						node.left_child = to_wrap
 						to_wrap.parent = node
 						current_node.right_child = node
-						nodefollowpos = node.followpos()
 					elif current_node.left_child.value:
 						node = Node(None, None, a, current_node)
 						nodes.append(node)
@@ -457,10 +464,6 @@ class Automata:
 						node.left_child = to_wrap
 						to_wrap.parent = node
 						current_node.left_child = node
-						nodefollowpos = node.followpos()
-					
-					
-				
 				elif a not in cls.operators.keys() and a not in ['(', ')']:
 					node = Node(None,None, a, None)
 					nodes.append(node)

@@ -1,5 +1,17 @@
 from Automata import Automata
 
+
+def test_tree_0():
+	# Arrange
+	regex = Automata._expand_regex('a')
+	# Act
+	tree = Automata._tree_from_regex(regex)[0]
+	# Assert
+	assert tree.value == "."
+	
+	assert tree.right_child.value == "#"
+	assert tree.left_child.value == "a"
+
 # Simple or
 def test_tree_1():
 	# Arrange
