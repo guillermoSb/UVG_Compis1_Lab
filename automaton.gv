@@ -1,7 +1,11 @@
 digraph {
 	graph [rankdir=LR]
 	0 [shape=triangle]
-	2 [shape=doublecircle]
+	1
+	2
+	3 [shape=doublecircle]
+	0 -> 0 [label=b]
 	0 -> 1 [label=a]
-	0 -> 2 [label=b]
+	1 -> 2 [label=b]
+	2 -> 3 [label=b]
 }

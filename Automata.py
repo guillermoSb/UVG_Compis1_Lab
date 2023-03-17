@@ -383,9 +383,9 @@ class Automata:
 			unsearched = [tree.firstpos()]
 			marked = []
 			final_states = tuple()
-			print(label_values)
+
 			while len(unsearched) > 0:
-				item = unsearched.pop()
+				item = tuple(sorted(unsearched.pop()))
 				marked.append(item)
 				# Create a new states
 				for s in set(label_values.values()):
@@ -404,12 +404,11 @@ class Automata:
 					
 					if keys[item] not in d_states:
 						d_states[keys[item]] = {}
-						print(item)
 						if len(label_values) - 1 in item:
 							final_states += (keys[item],)
 					if add_state:
 						d_states[keys[item]][s]	= keys[new_state]
-		
+			
 			symbols = set(label_values.values()).difference({'#',})
 			return Automata(d_states, 0, final_states, symbols, 'DFA')
 		
@@ -455,18 +454,13 @@ class Automata:
 						node.left_child = to_wrap
 						to_wrap.parent = node
 						current_node.right_child = node
-						nodefollowpos = node.followpos()
 					elif current_node.left_child.value:
 						node = Node(None, None, a, current_node)
 						nodes.append(node)
 						to_wrap = current_node.left_child
 						node.left_child = to_wrap
 						to_wrap.parent = node
-						current_node.left_child = node
-						nodefollowpos = node.followpos()
-					
-					
-				
+						current_node.left_child = node	
 				elif a not in cls.operators.keys() and a not in ['(', ')']:
 					node = Node(None,None, a, None)
 					nodes.append(node)
