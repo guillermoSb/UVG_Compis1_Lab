@@ -102,6 +102,8 @@ class Automata:
 					# Check if s is on the symbol list
 					if s not in self._symbols:
 						raise Exception("[Simulation Error] - {} is not on symbol list.".format(s))
+					if s not in self._states[current_state]:
+						raise Exception("[Simulation Error] - {} was not accepted.".format(input))
 					current_state = self._states[current_state][s]
 				# Check if the final state is on the final states
 				if current_state not in self._final:
@@ -368,7 +370,6 @@ class Automata:
 			self._check_regex(regex)	# Check that the regex is valid
 			# 1. Expand regex
 			self._regex = self._expand_regex(self._regex)
-			print(self._regex)
 			# 2. Build syntax tree
 			tree, nodes = Automata._tree_from_regex(self._regex)
 			label_values = {}
