@@ -102,6 +102,8 @@ class Automata:
 					# Check if s is on the symbol list
 					if s not in self._symbols:
 						raise Exception("[Simulation Error] - {} is not on symbol list.".format(s))
+					if s not in self._states[current_state]:
+						raise Exception("[Simulation Error] - {} was not accepted.".format(input))
 					current_state = self._states[current_state][s]
 				# Check if the final state is on the final states
 				if current_state not in self._final:
@@ -161,6 +163,18 @@ class Automata:
 						for a in self._symbols:
 							if self._states[s][a] == group[i]:
 								self._states[s][a] = representative
+				
+			dead_states = []
+			for state in self._states:
+				if len(set(self._states[state].values())) == 1 and list(self._states[state].values())[0] == state and state not in self._final:
+					dead_states.append(state)
+			for state in dead_states:
+				for k in self._states:
+					for s in self._symbols:
+						if self._states[k][s] == state:
+							del self._states[k][s]
+				
+				del self._states[state]
 		
 
 		def create_partiion(self, group, groups):
@@ -201,7 +215,7 @@ class Automata:
 						new_groups[0] = new_groups[0] + (s,)
 					if t not in new_groups[1] and t not in new_groups[0]:
 						new_groups[0] = new_groups[0] + (t,)
-					
+			
 			return new_groups
 						
 
@@ -227,8 +241,7 @@ class Automata:
 			labels[tuple(sorted(d_states_unmarked[0]))] = counter
 			counter += 1
 			final_states = []
-			
-
+			nfa._symbols = tuple(set(nfa._symbols).difference({'ε'}))
 			while len(d_states_unmarked) > 0:
 				# Mark the new state
 				d_state = tuple(sorted(d_states_unmarked.pop()))
@@ -251,7 +264,6 @@ class Automata:
 				counter += 1
 				if nfa._final in state:
 					final_states.append(labels[tuple(sorted(state))])
-			
 			return Automata(d_transitions, 0, final_states, nfa._symbols, 'DFA')
 			
 		
@@ -379,11 +391,13 @@ class Automata:
 			unsearched = [tree.firstpos()]
 			marked = []
 			final_states = tuple()
-			
+
 			while len(unsearched) > 0:
-				item = unsearched.pop()
+				item = tuple(sorted(unsearched.pop()))
+				marked.append(item)
 				# Create a new states
-				for s in sorted(set(label_values.values())):
+				for s in set(label_values.values()):
+					add_state = False
 					if s == "#":
 						continue
 					new_state = tuple()
@@ -463,7 +477,7 @@ class Automata:
 						to_wrap = current_node.left_child
 						node.left_child = to_wrap
 						to_wrap.parent = node
-						current_node.left_child = node
+						current_node.left_child = node	
 				elif a not in cls.operators.keys() and a not in ['(', ')']:
 					node = Node(None,None, a, None)
 					nodes.append(node)
