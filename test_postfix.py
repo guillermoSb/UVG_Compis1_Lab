@@ -9,4 +9,3 @@ def test_postfix():
 		# Assert
 		assert postfix == "a*bc.|"
 
-

@@ -671,6 +671,20 @@ class Automata:
 							regex = regex[:i + 1] + '.' + regex[i + 1:]
 					i += 1
 			return regex
+		
+		@classmethod
+		def _replace_range(cls, regex):
+			"""Replaces the range of characters with the corresponding characters"""
+			A = 65
+			Z = 90
+			a = 97
+			z = 122
+			zero = 48
+			# Find any range on the regex
+			i = 0
+
+
+			return regex
 
 		@classmethod
 		def _postfix_from_regex(cls, regex):
