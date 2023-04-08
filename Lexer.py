@@ -28,4 +28,20 @@ class Lexer():
 					if words[0] == "let":
 						token_name = words[1]
 						# Create the token regex (todo)
-						self.tokens[token_name] = "TODO"				
+						self.tokens[token_name] = Token._from_yalex(token_name, words[3])
+
+		def replace_constructions(self):
+				sorted_names = sorted(list(self.tokens.keys()), key=len, reverse=True)
+				for key in self.tokens.keys():
+						# Replace constructions
+						search = True
+						while search:
+							for name in sorted_names:
+								if name in self.tokens[key].value:
+									self.tokens[key].value = self.tokens[key].value.replace(name, self.tokens[name].value)
+									break
+							search = False
+						# Replace quotes
+						self.tokens[key].value = self.tokens[key].value.replace("'", '')
+						
+				return

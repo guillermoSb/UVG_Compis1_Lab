@@ -1,6 +1,6 @@
 (* Ejemplo básico *)
 
-let delimitador = [' ''\t''\n']
+let delimitador = ['\t''\n']
 let espacioEnBlanco = delimitador+
 let digito = ['0'-'9']
 let numero = '-'?digito+
