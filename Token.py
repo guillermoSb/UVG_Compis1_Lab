@@ -52,10 +52,7 @@ class Token():
 				ascii_regex += regex[i]
 			
 			# Replace '' with |
-			ascii_regex = ascii_regex.replace("''", "|")
-			# Replace ' with nothing
-			ascii_regex = ascii_regex.replace("'", "")
-	
+			ascii_regex = ascii_regex.replace("''", "'|'")
 			return Token(name, ascii_regex)
 
 		

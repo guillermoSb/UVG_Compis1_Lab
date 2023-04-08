@@ -28,7 +28,7 @@ def test_from_yalex_01():
 	token = Token._from_yalex('letra', yalex)
 	# Assert
 	assert token.name == 'letra'
-	assert token.value == '(097|098|065|066)'
+	assert token.value == "('097'|'098'|'065'|'066')"
 
 def test_from_yalex_02():
 	# Arrange
@@ -37,4 +37,14 @@ def test_from_yalex_02():
 	token = Token._from_yalex('digito', yalex)
 	# Assert
 	assert token.name == 'digito'
-	assert token.value == '(048|049|050|051|097|098)'
+	assert token.value == "('048'|'049'|'050'|'051'|'097'|'098')"
+
+def test_from_yalex_03():
+	# Arrange
+	yalex = "'-'?digito+"
+	# Act
+	token = Token._from_yalex('numero', yalex)
+	# Assert
+	assert token.name == 'numero'
+	assert token.value == "'045'?digito+"
+	
