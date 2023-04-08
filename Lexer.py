@@ -2,38 +2,30 @@ from Token import Token
 
 class Lexer():
 		tokens = {}	# Dictionary of tokens
-		
-		
-		def parse_token(self, name, value):
-			new_value = ''
-			# Build the range
-			for i in range(len(value)):
-				if value[i] == "-":
-					start = ord(value[i-2])
-					end = ord(value[i+2])
-					for j in range(start, end + 1):
-						new_value += "'{}'".format(chr(j))
-						if j != end:
-							new_value += "|"
-			if new_value != '':
-				value = new_value	
-				new_value = ''
-			# Insert an | between each '' in the value
-			for i in range(len(value)):	
-				if i + 1 < len(value):
-						if value[i] == "'" and value[i + 1] == "'":
-							new_value += "|"										
-				if i > 0 and i + 1 < len(value):
-					if value[i-1] == "'" and value[i+1] == "'" and value[i] != "|":
-						# Get ascii representation of the character
-						new_value += "{0:0=3d}".format(ord(value[i]))
-					elif value[i] == "|":
-						new_value += value[i]
-			# Replace [] with ()
-
-			new_value = "(" + new_value + ")"
-			return Token(name, new_value)
-
-			
-
-				
+		actions = {}
+		def __init__(self, file):
+				# Varaibles to keep track of the parsing
+				created_rules = False
+				# Open file and read it
+				self.file = open(file, 'r')
+				self.text = self.file.read()
+				self.file.close()
+				# Remove double spaces
+				self.text = self.text.replace('  ', ' ')
+				# Split the text with new line
+				lines = self.text.splitlines()
+				# Remove empty lines
+				lines = [line for line in lines if line != '']
+				rule_lines = []
+				# Iterate over lines
+				for line in lines:
+					if created_rules:
+						rule_lines.append(line)
+						continue
+					# Split the line in words
+					words = line.split(' ')
+					# If the first word is 'let' create a token
+					if words[0] == "let":
+						token_name = words[1]
+						# Create the token regex (todo)
+						self.tokens[token_name] = "TODO"				

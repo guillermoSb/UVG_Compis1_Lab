@@ -1,33 +1,31 @@
 from Lexer import Lexer
+from Token import Token
 
-def test_parse_token01():
-	# Arrange
-	lexer = Lexer()
-	# Act
-	token = lexer.parse_token('numero', "['1''2''3']")
+def test_tokens():
+	# Arrange and Act
+	lexer = Lexer('yalex.txt')	
 	# Assert
-	assert token.value == "(049|050|051)"
+	assert len(lexer.tokens.keys()) == 6
+	assert 'delimitador' in lexer.tokens.keys()
+	assert 'identificador' in lexer.tokens.keys()
+	assert 'numero' in lexer.tokens.keys()
+	assert 'digito' in lexer.tokens.keys()
+	assert 'letra' in lexer.tokens.keys()
+	assert 'espacioEnBlanco' in lexer.tokens.keys()
 
-def test_parse_token02():
-	# Arrange
-	lexer = Lexer()
-	# Act
-	token = lexer.parse_token('letra', "['a'-'d']")
+def test_init():
+	# Arrange and Act
+	lexer = Lexer('yalex.txt')
 	# Assert
-	assert token.value == "(097|098|099|100)"
+	assert lexer.file != None
+	assert lexer.text != None
+	assert len(lexer.text) > 0
 
-def test_parse_token03():
+def test_from_yalex_01():
 	# Arrange
-	lexer = Lexer()
+	yalex = "['a'-'b''A'-'b']"
 	# Act
-	token = lexer.parse_token('letra', "['a'-'d''A'-'D']")
+	token = Token._from_yalex('letra', yalex)
 	# Assert
-	assert token.value == "(097|098|099|100|065|066|067|068)"
-
-def test_parse_token04():
-	# Arrange
-	lexer = Lexer()
-	# Act
-	token = lexer.parse_token('letra', "['a'-'d''A'-'D''0'-'9']")
-	# Assert
-	assert token.value == "(097|098|099|100|065|066|067|068|048|049|050|051|052|053|054|055|056|057)"
+	assert token.name == 'letra'
+	assert token.value == '(097|098|065|066)'
