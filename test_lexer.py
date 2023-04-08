@@ -29,3 +29,12 @@ def test_from_yalex_01():
 	# Assert
 	assert token.name == 'letra'
 	assert token.value == '(097|098|065|066)'
+
+def test_from_yalex_02():
+	# Arrange
+	yalex = "['0'-'3''a''b']"
+	# Act
+	token = Token._from_yalex('digito', yalex)
+	# Assert
+	assert token.name == 'digito'
+	assert token.value == '(048|049|050|051|097|098)'
