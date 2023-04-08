@@ -23,7 +23,7 @@ def test_init():
 
 def test_from_yalex_01():
 	# Arrange
-	yalex = "['a'-'b''A'-'b']"
+	yalex = "['a'-'b''A'-'B']"
 	# Act
 	token = Token._from_yalex('letra', yalex)
 	# Assert
