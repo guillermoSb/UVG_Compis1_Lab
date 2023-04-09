@@ -23,12 +23,16 @@ class Lexer():
 						rule_lines.append(line)
 						continue
 					# Split the line in words
-					words = line.split(' ')
+					
+					splitted = line.split(' = ')
 					# If the first word is 'let' create a token
-					if words[0] == "let":
-						token_name = words[1]
+					if splitted[0].split(' ')[0] == "let":
+						right = splitted[1]
+						left = splitted[0].split(' ')
+						token_name = left[1]
 						# Create the token regex (todo)
-						self.tokens[token_name] = Token._from_yalex(token_name, words[3])
+						self.tokens[token_name] = Token._from_yalex(token_name, right)
+				self.replace_constructions()
 
 		def replace_constructions(self):
 				sorted_names = sorted(list(self.tokens.keys()), key=len, reverse=True)
@@ -43,5 +47,4 @@ class Lexer():
 							search = False
 						# Replace quotes
 						self.tokens[key].value = self.tokens[key].value.replace("'", '')
-						
-				return
+		

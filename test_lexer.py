@@ -5,13 +5,14 @@ def test_tokens():
 	# Arrange and Act
 	lexer = Lexer('yalex.txt')	
 	# Assert
-	assert len(lexer.tokens.keys()) == 6
+	assert len(lexer.tokens.keys()) == 7
 	assert 'delimitador' in lexer.tokens.keys()
 	assert 'identificador' in lexer.tokens.keys()
 	assert 'numero' in lexer.tokens.keys()
 	assert 'digito' in lexer.tokens.keys()
 	assert 'letra' in lexer.tokens.keys()
 	assert 'espacioEnBlanco' in lexer.tokens.keys()
+	assert 'decimal' in lexer.tokens.keys()
 
 def test_init():
 	# Arrange and Act
@@ -52,10 +53,8 @@ def test_from_yalex_03():
 def test_from_yalex_04():
 	# Arrange
 	lexer = Lexer('yalex.txt')	
-	# Act	
-	lexer.replace_constructions()
 	# Assert
+	print(lexer.tokens['decimal'].value)
 	assert len(lexer.tokens.keys()) == 6
-	print(lexer.tokens['digito'].value)
 	assert lexer.tokens['numero'].value == "045?(048|049|050|051|052|053|054|055|056|057)+"
 	
