@@ -15,5 +15,4 @@ def test_posfix_ascii():
 	# Act
 	postfix = Automata._postfix_from_regex(infix, True);
 	# Assert
-	print(postfix);
-	assert False == True
+	assert postfix == "045?048+."

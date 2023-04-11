@@ -268,12 +268,12 @@ class Automata:
 			
 		
 		@classmethod
-		def _from_regex(self, regex):		
+		def _from_regex(self, regex, is_ascii = False):		
 				"""Creates an Automata from a regex"""
 				self._regex = regex.replace(' ', '')	# Remove spaces from the regex
 				self._check_regex(regex)	# Check that the regex is valid
-				self._postfix = self._postfix_from_regex(regex)	# Convert the regex to postfix
-				return self._states_from_postfix(self._postfix)	# Create the states for the automaton
+				self._postfix = self._postfix_from_regex(regex, is_ascii)	# Convert the regex to postfix
+				return self._states_from_postfix(self._postfix, is_ascii)	# Create the states for the automaton
 
 
 		@classmethod
@@ -339,7 +339,7 @@ class Automata:
 						start = len(new_regex) - 1
 						count = 0
 						while True:
-							print(regex[start])
+							
 							if regex[start] == ")":
 								count += 1
 							elif regex[start] == "(":
@@ -523,11 +523,25 @@ class Automata:
 				
 
 		@classmethod
-		def _states_from_postfix(cls, postfix):
+		def _states_from_postfix(cls, postfix, is_ascii=False):
 			"""Creates the staes for the automata from a postfix expression"""
 			state_counter = 0
-			postfix_stack = list(postfix)
+			print("Posfix is", postfix)
+			if not is_ascii:
+				postfix_stack = list(postfix)
+			else:
+				postfix_stack = []	
+				i = 0
+				while i < len(postfix):
+					if postfix[i] not in ['|', '(', ')', '?', '*', '.']:
+						postfix_stack.append(postfix[i:i+3])
+						i += 3			
+					else:
+						postfix_stack.append(postfix[i])
+						i += 1
+			
 			operation_stack = []
+			print("POSFIX STACK IS: ", postfix_stack)
 			while len(postfix_stack) > 0:
 				token = postfix_stack.pop(0)
 				if token in cls.operators.keys():
@@ -674,10 +688,13 @@ class Automata:
 						else:
 							if i + 2 < len(regex) - 1:
 								if regex[i + 3] not in cls.operators and regex[i + 3] != ')':
-									regex = regex[:i + 3] + '.' + regex[i + 3:]
+									regex = regex[:i + 4] + '.' + regex[i + 4:]
 									i += 3
-					i += 1
-			
+					if not is_ascii:
+						i +=1
+					else:
+						i += 4
+			print("Concat regex", regex)
 			return regex
 
 		@classmethod
@@ -700,12 +717,11 @@ class Automata:
 						if regex[i] not in ['|', '(', ')', '?', '*', '.']:
 							regex_list.append(regex[i:i+3])
 							i += 3
-							print(regex_list)
 						else:
 							regex_list.append(regex[i])
 							i += 1
 				# Start the Shuntingh Yard Algorithm
-
+				
 				# Implementation of the Shunting Yard Algorithm (https://brilliant.org/wiki/shunting-yard-algorithm/
 				for token in regex_list:
 					is_operator = token in cls.operators.keys()	
