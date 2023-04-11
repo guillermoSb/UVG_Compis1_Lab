@@ -663,27 +663,47 @@ class Automata:
 
 
 		@classmethod
-		def _add_concat_to_regex(cls, regex):
+		def _add_concat_to_regex(cls, regex, is_ascii = False):
 			i = 0
 			while i < len(regex):
 					if regex[i] not in ['|', '(', '.'] and i < len(regex) - 1:
-						if regex[i + 1] not in cls.operators and regex[i + 1] != ')':
-							regex = regex[:i + 1] + '.' + regex[i + 1:]
+						if not is_ascii:
+							if regex[i + 1] not in cls.operators and regex[i + 1] != ')':
+									regex = regex[:i + 1] + '.' + regex[i + 1:]
+									i += 1
+						else:
+							if i + 2 < len(regex) - 1:
+								if regex[i + 3] not in cls.operators and regex[i + 3] != ')':
+									regex = regex[:i + 3] + '.' + regex[i + 3:]
+									i += 3
 					i += 1
+			
 			return regex
 
 		@classmethod
-		def _postfix_from_regex(cls, regex):
-				"""Converts a regex from postfix"""
+		def _postfix_from_regex(cls, regex, is_ascii = False):
+				"""Converts a regex from postfix. If it is ASCII it has three digits"""
 				# Add the . to the regex to handle concatenation
-				regex = cls._add_concat_to_regex(regex)
+				regex = cls._add_concat_to_regex(regex, is_ascii)
 				
 				# Stack for tokens
 				token_stack = []
 				# Stack for operators
 				operator_stack = []
 				# Regex to list
-				regex_list = list(regex)
+				if not is_ascii:
+					regex_list = list(regex)
+				else:
+					regex_list = []
+					i = 0
+					while i < len(regex):
+						if regex[i] not in ['|', '(', ')', '?', '*', '.']:
+							regex_list.append(regex[i:i+3])
+							i += 3
+							print(regex_list)
+						else:
+							regex_list.append(regex[i])
+							i += 1
 				# Start the Shuntingh Yard Algorithm
 
 				# Implementation of the Shunting Yard Algorithm (https://brilliant.org/wiki/shunting-yard-algorithm/

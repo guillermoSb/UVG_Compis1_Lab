@@ -55,6 +55,6 @@ def test_from_yalex_04():
 	lexer = Lexer('yalex.txt')	
 	# Assert
 	print(lexer.tokens['decimal'].value)
-	assert len(lexer.tokens.keys()) == 6
+	assert len(lexer.tokens.keys()) == 7
 	assert lexer.tokens['numero'].value == "045?(048|049|050|051|052|053|054|055|056|057)+"
 	
