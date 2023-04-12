@@ -1,14 +1,6 @@
-from Automata import Automata
+from Lexer import Lexer
 
 
-# ab*ab
-
-a = Automata._from_regex('(054|045|041|034)011*', is_ascii=True)
-
-
-a.draw()
-
-
-
-
-
+l = Lexer('yalex.txt')
+l.replace_constructions()
+l.draw_automata()

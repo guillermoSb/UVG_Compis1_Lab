@@ -686,14 +686,23 @@ class Automata:
 									regex = regex[:i + 1] + '.' + regex[i + 1:]
 									i += 1
 						else:
-							if i + 2 < len(regex) - 1:
-								if regex[i + 3] not in cls.operators and regex[i + 3] != ')':
-									regex = regex[:i + 4] + '.' + regex[i + 4:]
-									i += 3
+							if regex[i] == ")" or regex[i] == "?" or regex[i] == "*" or regex[i] == "+":
+								if regex[i+1] not in cls.operators and regex[i + 1] != ')':
+									regex = regex[:i + 1] + '.' + regex[i + 1:]
+									
+							else:
+									if i + 3 < len(regex):
+										if regex[i + 3] not in cls.operators and regex [i + 3] != ')':			
+												regex = regex[:i + 3] + '.' + regex[i + 3:]
+												i += 3
 					if not is_ascii:
-						i +=1
+						i += 1
 					else:
-						i += 4
+						# if it is a digit, skip 3
+						if regex[i] not in ['|', '(', ')', '?', '*', '.']:
+							i += 3
+						else:
+							i += 1
 			print("Concat regex", regex)
 			return regex
 

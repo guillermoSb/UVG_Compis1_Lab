@@ -4,13 +4,14 @@ let delimitador = [' ''\t''\n']
 let espacioEnBlanco = delimitador+
 let digito = ['0'-'9']
 let numero = '-'?digito+
-let letra = ['a'-'z''A'-'Z']
+let decimal = numero'.'numero
+let letra = ['a'-'Z''A'-'Z']
 let identificador = letra(letra|digito)*
-let decimal = digito('.'digito)?('E'['+''_']?digito)?
 
 rule tokens =
-	espacioEnBlanco	{} | identificador	{ print("Identificador\n") }
-	| numero			{ print("Número\n") }
-	| '+'				{ print("Operador de suma\n") }
-	| '*'				{ print("Operador de multiplicación\n") }
-	| '='				{ print("Operador de asignación\n") }
+	espacioEnBlanco	{}
+  | identificador	{ print("Identificador\n") }
+  | numero			{ print("Número\n") }
+  | '+'				{ print("Operador de suma\n") }
+  | '*'				{ print("Operador de multiplicación\n") }
+  | '='				{ print("Operador de asignación\n") }

@@ -1,4 +1,5 @@
 from Token import Token
+from Automata import Automata
 
 class Lexer():
 		tokens = {}	# Dictionary of tokens
@@ -48,3 +49,14 @@ class Lexer():
 						# Replace quotes
 						self.tokens[key].value = self.tokens[key].value.replace("'", '')
 		
+		def draw_automata(self):
+			regex = ''
+			for key in self.tokens.keys():
+				regex += '(' + self.tokens[key].value + ')'
+				if key != list(self.tokens.keys())[-1]:
+					regex += '|'
+			automata = Automata._from_regex(regex, is_ascii=True)
+			automata.draw()
+
+
+			
