@@ -34,6 +34,7 @@ class Lexer():
 						# Create the token regex (todo)
 						self.tokens[token_name] = Token._from_yalex(token_name, right)
 				self.replace_constructions()
+				
 
 		def replace_constructions(self):
 				sorted_names = sorted(list(self.tokens.keys()), key=len, reverse=True)
@@ -42,13 +43,13 @@ class Lexer():
 						search = True
 						while search:
 							for name in sorted_names:
-								if name in self.tokens[key].value:
+								while name in self.tokens[key].value:
 									self.tokens[key].value = self.tokens[key].value.replace(name, self.tokens[name].value)
-									break
+									
 							search = False
 						# Replace quotes
 						self.tokens[key].value = self.tokens[key].value.replace("'", '')
-		
+
 		def draw_automata(self):
 			regex = ''
 			for key in self.tokens.keys():

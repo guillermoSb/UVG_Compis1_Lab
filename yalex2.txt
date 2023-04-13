@@ -1,9 +1,12 @@
 (* Ejemplo básico *)
 
 
+let delimitador = [' ']
+let espacioEnBlanco = delimitador
 let digito = ['0'-'9']
-let numero = (letra(digito)*)
-let letra = ['a'-'Z''A'-'Z']
+let numero = '-'?digito
+let decimal = numero'.'numero
+let letra = ['a'-'b''A'-'B']
 let identificador = letra(letra|digito)*
 
 rule tokens =

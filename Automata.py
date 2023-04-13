@@ -526,14 +526,13 @@ class Automata:
 		def _states_from_postfix(cls, postfix, is_ascii=False):
 			"""Creates the staes for the automata from a postfix expression"""
 			state_counter = 0
-			print("Posfix is", postfix)
 			if not is_ascii:
 				postfix_stack = list(postfix)
 			else:
 				postfix_stack = []	
 				i = 0
 				while i < len(postfix):
-					if postfix[i] not in ['|', '(', ')', '?', '*', '.']:
+					if postfix[i] not in ['|', '(', ')', '?', '*', '.', '+']:
 						postfix_stack.append(postfix[i:i+3])
 						i += 3			
 					else:
@@ -541,7 +540,6 @@ class Automata:
 						i += 1
 			
 			operation_stack = []
-			print("POSFIX STACK IS: ", postfix_stack)
 			while len(postfix_stack) > 0:
 				token = postfix_stack.pop(0)
 				if token in cls.operators.keys():
@@ -667,8 +665,14 @@ class Automata:
 						state_counter += 2
 						operation_stack.append(Automata(new_states, start_state, end_state, operand_1._symbols.union(operand_2._symbols)))	
 				else:
+					correct_token = token
+					if is_ascii:
+						# Convert the token from ascii to unicode
+						correct_token = chr(int(token))
+						if correct_token == " ":
+							correct_token = "SPACE"
 					# Append a base Automata to the operation stack, this state has two initial states with a connection between them
-					operation_stack.append(Automata({state_counter: {token: (state_counter + 1,)}, state_counter + 1: {}}, state_counter, state_counter + 1, {token,}))
+					operation_stack.append(Automata({state_counter: {correct_token: (state_counter + 1,)}, state_counter + 1: {}}, state_counter, state_counter + 1, {correct_token,}))
 					
 					state_counter += 2
 			
@@ -703,7 +707,7 @@ class Automata:
 							i += 3
 						else:
 							i += 1
-			print("Concat regex", regex)
+			
 			return regex
 
 		@classmethod
@@ -723,14 +727,13 @@ class Automata:
 					regex_list = []
 					i = 0
 					while i < len(regex):
-						if regex[i] not in ['|', '(', ')', '?', '*', '.']:
+						if regex[i] not in ['|', '(', ')', '?', '*', '.', '+']:
 							regex_list.append(regex[i:i+3])
 							i += 3
 						else:
 							regex_list.append(regex[i])
 							i += 1
 				# Start the Shuntingh Yard Algorithm
-				
 				# Implementation of the Shunting Yard Algorithm (https://brilliant.org/wiki/shunting-yard-algorithm/
 				for token in regex_list:
 					is_operator = token in cls.operators.keys()	
