@@ -6,7 +6,6 @@ class Lexer():
 		actions = {}
 		def __init__(self, file):
 				# Varaibles to keep track of the parsing
-				created_rules = False
 				# Open file and read it
 				self.file = open(file, 'r')
 				self.text = self.file.read()
@@ -17,11 +16,14 @@ class Lexer():
 				lines = self.text.splitlines()
 				# Remove empty lines
 				lines = [line for line in lines if line != '']
-				rule_lines = []
+				rules_string = ""
 				# Iterate over lines
+				rules = False
 				for line in lines:
-					if created_rules:
-						rule_lines.append(line)
+					if line.replace(' ', '') == 'ruletokens=':
+						rules = True
+					if rules:
+						rules_string += line.strip()
 						continue
 					# Split the line in words
 					
@@ -34,6 +36,18 @@ class Lexer():
 						# Create the token regex (todo)
 						self.tokens[token_name] = Token._from_yalex(token_name, right)
 				self.replace_constructions()
+
+				# Process rules
+				# Split rules by |
+				splitted_rules = rules_string.split('|')
+				splitted_rules.pop(0)
+				for rule in splitted_rules:
+					rule = rule.strip()
+					name, value = rule.split(' ', 1)
+					value = value.replace('{','').replace('}','').strip()
+					if name in self.tokens.keys():
+						self.actions[name] = value
+				
 				
 
 		def replace_constructions(self):
