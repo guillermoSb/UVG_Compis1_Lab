@@ -68,4 +68,13 @@ def test_parse_rule_string01():
 	assert action.type == 'token'
 	assert action.value == 'print("Número\\n")'
 	assert action.name == 'numero'
-	pass
+
+def test_parse_rule_string02():
+	# Arrange
+	rule_str = ' \'+\'				{ print("Operador de suma\\n") }'
+	# Act
+	action = Lexer.parse_action_line(rule_str)
+	# Assert
+	assert action.type == 'keyword'
+	assert action.value == 'print("Operador de suma\\n")'
+	assert action.name == '+'

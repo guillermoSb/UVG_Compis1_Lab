@@ -71,6 +71,7 @@ class Lexer():
 
 		@classmethod		
 		def parse_action_line(cls, line):
+			# Parse a line of the form: 'token' {action}
 			name = ''
 			value = ''
 			type = 'token'
@@ -79,16 +80,16 @@ class Lexer():
 				if char == "{":
 					parsing_action = True
 					continue
-					
 				if char == "}":
 					parsing_action = False
 					break
-				
 				if parsing_action:
 					value += char
 					continue
-
-				if char != " " and char != '\t' and char != '\n' and not parsing_action:
+				if char == "'":
+					type = 'keyword'
+					continue
+				if char not in [ " ", '\t', '\n', "'"] and not parsing_action:
 					name += char
 			value = value.strip()
 			new_action = Action(type, name, value)
