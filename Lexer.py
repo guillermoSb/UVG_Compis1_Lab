@@ -95,6 +95,18 @@ class Lexer():
 			value = value.strip()
 			new_action = Action(type, name, value)
 			return new_action
+		
+
+		def create_program(self):
+			# Will create a new file called lexical_analyzer.py
+
+			with open('lexical_analyzer.py', 'w') as f:
+				# Write all the contents of Automata.py on the new file
+				with open('Automata.py', 'r') as automata_file:
+					f.write(automata_file.read())
+					automata_file.close()	# Close the file
+				
+				f.close()	# Close the file
 					
 				
 			
