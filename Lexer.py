@@ -71,14 +71,14 @@ class Lexer():
 			
 			pass
 
-		def draw_automata(self):
+		def create_automata(self):
 			regex = ''
 			for key in self.tokens.keys():
 				regex += '(' + self.tokens[key].value + ')'
 				if key != list(self.tokens.keys())[-1]:
 					regex += '|'
 			automata = Automata._from_regex(regex, is_ascii=True)
-			automata.draw()
+			return automata
 
 
 			
