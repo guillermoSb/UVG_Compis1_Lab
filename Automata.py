@@ -100,13 +100,14 @@ class Automata:
 		# Initializers
 
 
-		def __init__(self, states, initial, final, symbols, type = 'NFA'):
+		def __init__(self, states, initial, final, symbols, type = 'NFA', action = None):
 				"""Constructor for the Automata class"""				
 				self._states = states
 				self._initial = initial
 				self._final = final
 				self._type = type
 				self._symbols = symbols
+				self._action = action
 
 
 		

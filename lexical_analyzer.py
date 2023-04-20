@@ -835,4 +835,4 @@ class Automata:
 					token_stack.append(operator_stack.pop()) # Last part of the algorithm: append remaining operators to the token stack
 				return ''.join(token_stack)	# The output is a string in postfix notation			
 		
-
+		
