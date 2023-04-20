@@ -42,7 +42,8 @@ class Lexer():
 				splitted_rules = rules_string.split('|')
 				splitted_rules.pop(0)
 				for line in splitted_rules:
-					rule = self.parse_action_line(line)
+					action = self.parse_action_line(line)
+					self.actions[action.name] = action
 
 
 		def replace_constructions(self):
