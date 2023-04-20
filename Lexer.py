@@ -3,7 +3,7 @@ from Automata import Automata, Action
 
 class Lexer():
 		tokens = {}	# Dictionary of tokens
-		actions = {}
+		actions = {} # Dictionary of actions
 		def __init__(self, file):
 				# Varaibles to keep track of the parsing
 				# Open file and read it

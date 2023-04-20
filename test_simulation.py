@@ -8,18 +8,19 @@ def test_dfa_simulation_accept():
 		a = Automata._from_regex('(a|b)*abb')
 		a = Automata._dfa_from_nfa(a)
 		# Act
-		ok = a.simulate('abb')
+		state = a.simulate('abb')
 		# Assert
-		assert ok == True
+		
+		assert state == a._final[0]
 
 def test_dfa_simulation_accept_2():
     # Arrange
 		a = Automata._from_regex('(a|b)*abb')
 		a = Automata._dfa_from_nfa(a)
 		# Act
-		ok = a.simulate('abbaaaaaabbbbbbbbbbaababababbaabbaabb')
+		state = a.simulate('abbaaaaaabbbbbbbbbbaababababbaabbaabb')
 		# Assert
-		assert ok == True
+		assert state in a._final
 
 
 
@@ -27,17 +28,21 @@ def test_ndfa_simulation_accept():
     # Arrange
 		a = Automata._from_regex('(a|b)*abb')
 		# Act
-		ok = a.simulate('abb')
+		states = a.simulate('abb')
+		
 		# Assert
-		assert ok == True
+		assert a._final in states
 
 def test_ndfa_simulation_accept_2():
     # Arrange
 		a = Automata._from_regex('(a|b)*abb')
 		# Act
-		ok = a.simulate('abbaaaaaabbbbbbbbbbaababababbaabbaabb')
+		states = a.simulate('abbaaaaaabbbbbbbbbbaababababbaabbaabb')
 		# Assert
-		assert ok == True
+		assert a._final in states
+
+
+
 
 
 
