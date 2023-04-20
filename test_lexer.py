@@ -1,6 +1,6 @@
 from Lexer import Lexer
 from Token import Token
-from Automata import Automata
+from Automata import Automata, Action
 
 def test_tokens():
 	# Arrange and Act
@@ -61,5 +61,11 @@ def test_from_yalex_04():
 
 def test_parse_rule_string01():
 	# Arrange
-	rule_str = '/t/tespacioEnBlanco	{}'
+	rule_str = '  numero			{ print("Número\\n") }   '
+	# Act
+	action = Lexer.parse_action_line(rule_str)
+	# Assert
+	assert action.type == 'token'
+	assert action.value == 'print("Número\\n")'
+	assert action.name == 'numero'
 	pass

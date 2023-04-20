@@ -1,5 +1,5 @@
 from Token import Token
-from Automata import Automata
+from Automata import Automata, Action
 
 class Lexer():
 		tokens = {}	# Dictionary of tokens
@@ -39,17 +39,10 @@ class Lexer():
 
 				# Process rules
 				# Split rules by |
-				# splitted_rules = rules_string.split('|')
-				# splitted_rules.pop(0)
-				# for rule in splitted_rules:
-				# 	# replace all tabs with just one space
-				# 	rule = rule.replace('\t', ' ')
-				# 	rule = rule.strip()
-				# 	print(rule)
-				# 	name, value = rule.split(' ', 1)
-				# 	value = value.replace('{','').replace('}','').strip()
-				# 	if name in self.tokens.keys():
-				# 		self.actions[name] = value
+				splitted_rules = rules_string.split('|')
+				splitted_rules.pop(0)
+				for line in splitted_rules:
+					rule = self.parse_action_line(line)
 
 
 		def replace_constructions(self):
@@ -66,11 +59,6 @@ class Lexer():
 						# Replace quotes
 						self.tokens[key].value = self.tokens[key].value.replace("'", '')
 
-		
-		def parse_action_line(self, line):
-			
-			pass
-
 		def create_automata(self):
 			regex = ''
 			for key in self.tokens.keys():
@@ -81,4 +69,30 @@ class Lexer():
 			return automata
 
 
+		@classmethod		
+		def parse_action_line(cls, line):
+			name = ''
+			value = ''
+			type = 'token'
+			parsing_action = False
+			for char in line:
+				if char == "{":
+					parsing_action = True
+					continue
+					
+				if char == "}":
+					parsing_action = False
+					break
+				
+				if parsing_action:
+					value += char
+					continue
+
+				if char != " " and char != '\t' and char != '\n' and not parsing_action:
+					name += char
+			value = value.strip()
+			new_action = Action(type, name, value)
+			return new_action
+					
+				
 			

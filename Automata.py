@@ -758,3 +758,10 @@ class Automata:
 				while len(operator_stack) > 0:
 					token_stack.append(operator_stack.pop()) # Last part of the algorithm: append remaining operators to the token stack
 				return ''.join(token_stack)	# The output is a string in postfix notation			
+		
+
+class Action():
+	def __init__(self, type, name, value):
+		self.type = type
+		self.name = name
+		self.value = value
