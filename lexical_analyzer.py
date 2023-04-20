@@ -100,13 +100,14 @@ class Automata:
 		# Initializers
 
 
-		def __init__(self, states, initial, final, symbols, type = 'NFA'):
+		def __init__(self, states, initial, final, symbols, type = 'NFA', action = None):
 				"""Constructor for the Automata class"""				
 				self._states = states
 				self._initial = initial
 				self._final = final
 				self._type = type
 				self._symbols = symbols
+				self._action = action
 
 
 		
@@ -782,9 +783,12 @@ class Automata:
 							i += 3
 						else:
 							i += 1
-			
 			return regex
-
+		
+		@classmethod
+		def simulate_multiple_automatas(cls, automatas, string):
+			"""Simulates multiple automatas with the same string"""
+			pass
 		@classmethod
 		def _postfix_from_regex(cls, regex, is_ascii = False):
 				"""Converts a regex from postfix. If it is ASCII it has three digits"""
@@ -835,4 +839,10 @@ class Automata:
 					token_stack.append(operator_stack.pop()) # Last part of the algorithm: append remaining operators to the token stack
 				return ''.join(token_stack)	# The output is a string in postfix notation			
 		
-		
+
+if __name__ == "__main__":
+					with open('input.txt', 'r') as input_file:
+						input = input_file.read()
+						input_file.close()
+				
+					

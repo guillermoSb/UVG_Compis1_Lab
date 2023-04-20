@@ -106,6 +106,15 @@ class Lexer():
 					f.write(automata_file.read())
 					automata_file.close()	# Close the file
 				
+				# Write all the code contents
+				f.write('if __name__ == "__main__":')
+
+				f.write("""
+					with open('input.txt', 'r') as input_file:
+						input = input_file.read()
+						input_file.close()
+				""")
+				
 				f.close()	# Close the file
 					
 				

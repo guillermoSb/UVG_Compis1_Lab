@@ -783,9 +783,12 @@ class Automata:
 							i += 3
 						else:
 							i += 1
-			
 			return regex
-
+		
+		@classmethod
+		def simulate_multiple_automatas(cls, automatas, string):
+			"""Simulates multiple automatas with the same string"""
+			pass
 		@classmethod
 		def _postfix_from_regex(cls, regex, is_ascii = False):
 				"""Converts a regex from postfix. If it is ASCII it has three digits"""
