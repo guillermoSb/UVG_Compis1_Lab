@@ -692,8 +692,7 @@ class Automata:
 						else:
 							if regex[i] == ")" or regex[i] == "?" or regex[i] == "*" or regex[i] == "+":
 								if regex[i+1] not in cls.operators and regex[i + 1] != ')':
-									regex = regex[:i + 1] + '.' + regex[i + 1:]
-									
+									regex = regex[:i + 1] + '.' + regex[i + 1:]	
 							else:
 									if i + 3 < len(regex):
 										if regex[i + 3] not in cls.operators and regex [i + 3] != ')':			
@@ -703,7 +702,7 @@ class Automata:
 						i += 1
 					else:
 						# if it is a digit, skip 3
-						if regex[i] not in ['|', '(', ')', '?', '*', '.']:
+						if regex[i] not in ['|', '(', ')', '?', '*', '.', '+']:
 							i += 3
 						else:
 							i += 1

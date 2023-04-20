@@ -1,11 +1,15 @@
 (* Ejemplo básico *)
 
+let digito = '0'
+let numero = '-'?digito+
+let decimal = numero'.'numero
 
-let delimitador = [' ']
-let espacioEnBlanco = delimitador
 
 
 rule tokens =
-	espacioEnBlanco {}
-  | delimitador { print("Delimitador\n") }
-  | espacioEnBlanco { print("espacioEnBlanco\n") }
+	espacioEnBlanco	{}
+  | identificador	{ print("Identificador\n") }
+  | numero			{ print("Número\n") }
+  | '+'				{ print("Operador de suma\n") }
+  | '*'				{ print("Operador de multiplicación\n") }
+  | '='				{ print("Operador de asignación\n") }

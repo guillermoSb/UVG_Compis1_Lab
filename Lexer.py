@@ -39,16 +39,18 @@ class Lexer():
 
 				# Process rules
 				# Split rules by |
-				splitted_rules = rules_string.split('|')
-				splitted_rules.pop(0)
-				for rule in splitted_rules:
-					rule = rule.strip()
-					name, value = rule.split(' ', 1)
-					value = value.replace('{','').replace('}','').strip()
-					if name in self.tokens.keys():
-						self.actions[name] = value
-				
-				
+				# splitted_rules = rules_string.split('|')
+				# splitted_rules.pop(0)
+				# for rule in splitted_rules:
+				# 	# replace all tabs with just one space
+				# 	rule = rule.replace('\t', ' ')
+				# 	rule = rule.strip()
+				# 	print(rule)
+				# 	name, value = rule.split(' ', 1)
+				# 	value = value.replace('{','').replace('}','').strip()
+				# 	if name in self.tokens.keys():
+				# 		self.actions[name] = value
+
 
 		def replace_constructions(self):
 				sorted_names = sorted(list(self.tokens.keys()), key=len, reverse=True)
@@ -63,6 +65,11 @@ class Lexer():
 							search = False
 						# Replace quotes
 						self.tokens[key].value = self.tokens[key].value.replace("'", '')
+
+		
+		def parse_action_line(self, line):
+			
+			pass
 
 		def draw_automata(self):
 			regex = ''

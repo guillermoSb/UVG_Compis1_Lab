@@ -58,12 +58,8 @@ def test_from_yalex_04():
 	assert len(lexer.tokens.keys()) == 7
 	assert lexer.tokens['numero'].value == "045?(048|049|050|051|052|053|054|055|056|057)+"
 
-# def test_create_automata_from_yalex():
-# 	# Arrange
-# 	lexer = Lexer('yalex.txt')	
-# 	# Act
-# 	automata = Automata._from_regex('045048', is_ascii=True)
-	
-# 	# Assert
-# 	assert len(lexer.tokens.keys()) == 6
-# 	assert lexer.tokens['numero'].value == "45?(048|049|050|051|052|053|054|055|056|057)+"
+
+def test_parse_rule_string01():
+	# Arrange
+	rule_str = '/t/tespacioEnBlanco	{}'
+	pass

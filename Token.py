@@ -54,5 +54,7 @@ class Token():
 			# Replace '' with |
 			ascii_regex = ascii_regex.replace("''", "'|'")
 			return Token(name, ascii_regex)
-
 		
+
+		def __str__(self) -> str:
+			return self.value

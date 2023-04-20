@@ -8,6 +8,7 @@ let decimal = numero'.'numero
 let letra = ['a'-'Z''A'-'Z']
 let identificador = letra(letra|digito)*
 
+
 rule tokens =
 	espacioEnBlanco	{}
   | identificador	{ print("Identificador\n") }
