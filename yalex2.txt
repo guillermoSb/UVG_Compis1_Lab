@@ -9,9 +9,10 @@ let identificador = letra(letra|digito)*
 
 
 rule tokens =
-	espacioEnBlanco	{}
-  | identificador	{ print("Identificador\n") }
-  | numero			{ print("Número\n") }
-  | '+'				{ print("Operador de suma\n") }
-  | '*'				{ print("Operador de multiplicación\n") }
-  | '='				{ print("Operador de asignación\n") }
+  | identificador	{ print("Identificador") }
+  | numero			{ print("Número") }
+  | espacioEnBlanco	{ print("Espacio") }
+  | delimitador	{ print("delimitador") }
+  | '+'				{ print("Operador de suma") }
+  | '*'				{ print("Operador de multiplicación") }
+  | '='				{ print("Operador de asignación") }
