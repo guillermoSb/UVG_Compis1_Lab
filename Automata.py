@@ -185,7 +185,7 @@ class Automata:
 				for s in input:
 					# Check if s is on the symbol list
 					if s not in self._symbols:
-						raise Exception("[Simulation Error] - {} is not on symbol list.".format(s))
+						return tuple()
 					if s not in self._states[current_state]:
 						raise Exception("[Simulation Error] - {} was not accepted.".format(input))
 					current_state = self._states[current_state][s]
@@ -195,7 +195,7 @@ class Automata:
 				i = 0
 				while i != len(input):
 					if input[i] not in self._symbols:
-						raise Exception("[Simulation Error] - {} is not on symbol list.".format(input[i]))
+						return tuple()
 					S = self.e_closure_t(self.move(S, input[i]))
 					i += 1
 				return S
@@ -746,8 +746,6 @@ class Automata:
 					if is_ascii:
 						# Convert the token from ascii to unicode
 						correct_token = chr(int(token))
-						if correct_token == " ":
-							correct_token = "SPACE"
 					# Append a base Automata to the operation stack, this state has two initial states with a connection between them
 					operation_stack.append(Automata({state_counter: {correct_token: (state_counter + 1,)}, state_counter + 1: {}}, state_counter, state_counter + 1, {correct_token,}))
 					
