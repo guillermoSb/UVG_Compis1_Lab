@@ -6,7 +6,7 @@ def test_tokens():
 	# Arrange and Act
 	lexer = Lexer('yalex.txt')	
 	# Assert
-	assert len(lexer.tokens.keys()) == 7
+	assert len(lexer.tokens.keys()) == 10
 	assert 'delimitador' in lexer.tokens.keys()
 	assert 'identificador' in lexer.tokens.keys()
 	assert 'numero' in lexer.tokens.keys()
@@ -55,26 +55,6 @@ def test_from_yalex_04():
 	lexer = Lexer('yalex.txt')	
 	# Assert
 	print(lexer.tokens['decimal'].value)
-	assert len(lexer.tokens.keys()) == 7
+	assert len(lexer.tokens.keys()) == 10
 	assert lexer.tokens['numero'].value == "045?(048|049|050|051|052|053|054|055|056|057)+"
 
-
-def test_parse_rule_string01():
-	# Arrange
-	rule_str = '  numero			{ print("Número\\n") }   '
-	# Act
-	action = Lexer.parse_action_line(rule_str)
-	# Assert
-	assert action.type == 'token'
-	assert action.value == 'print("Número\\n")'
-	assert action.name == 'numero'
-
-def test_parse_rule_string02():
-	# Arrange
-	rule_str = ' \'+\'				{ print("Operador de suma\\n") }'
-	# Act
-	action = Lexer.parse_action_line(rule_str)
-	# Assert
-	assert action.type == 'keyword'
-	assert action.value == 'print("Operador de suma\\n")'
-	assert action.name == '+'

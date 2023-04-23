@@ -843,21 +843,29 @@ if __name__ == "__main__":
 					actions_dict = { }
 					automata_dict = { }
 				
-					token_dict["delimitador"] = '(032)'
-					token_dict["espacioEnBlanco"] = '(032)+'
-					token_dict["digito"] = '(048|049|050|051|052|053|054|055|056|057)'
-					token_dict["numero"] = '045?(048|049|050|051|052|053|054|055|056|057)+'
-					token_dict["letra"] = '(097|098|099|100|101|102|103|104|105|106|107|108|109|110|111|112|113|114|115|116|117|118|119|120|121|122|065|066|067|068|069|070|071|072|073|074|075|076|077|078|079|080|081|082|083|084|085|086|087|088|089|090)'
-					token_dict["identificador"] = '(097|098|099|100|101|102|103|104|105|106|107|108|109|110|111|112|113|114|115|116|117|118|119|120|121|122|065|066|067|068|069|070|071|072|073|074|075|076|077|078|079|080|081|082|083|084|085|086|087|088|089|090)((097|098|099|100|101|102|103|104|105|106|107|108|109|110|111|112|113|114|115|116|117|118|119|120|121|122|065|066|067|068|069|070|071|072|073|074|075|076|077|078|079|080|081|082|083|084|085|086|087|088|089|090)|(048|049|050|051|052|053|054|055|056|057))*'
-					token_dict["+"] = '043'
+					token_dict["while-"] = '119104105108101045'
+					token_dict["for-"] = '102111114045'
+					token_dict["if-"] = '105102045'
+					token_dict["="] = '061'
 					token_dict["*"] = '042'
-					actions_dict["identificador"] = 'print("Identificador")'
-					actions_dict["numero"] = 'print("Número")'
-					actions_dict["digito"] = 'print("Digito")'
-					actions_dict["espacioEnBlanco"] = ''
-					actions_dict["delimitador"] = ''
-					actions_dict["+"] = 'print("Operador de suma")'
+					token_dict["+"] = '043'
+					token_dict["identificador"] = '(097|098|099|100|101|102|103|104|105|106|107|108|109|110|111|112|113|114|115|116|117|118|119|120|121|122|065|066|067|068|069|070|071|072|073|074|075|076|077|078|079|080|081|082|083|084|085|086|087|088|089|090)((097|098|099|100|101|102|103|104|105|106|107|108|109|110|111|112|113|114|115|116|117|118|119|120|121|122|065|066|067|068|069|070|071|072|073|074|075|076|077|078|079|080|081|082|083|084|085|086|087|088|089|090)|(048|049|050|051|052|053|054|055|056|057))*'
+					token_dict["letra"] = '(097|098|099|100|101|102|103|104|105|106|107|108|109|110|111|112|113|114|115|116|117|118|119|120|121|122|065|066|067|068|069|070|071|072|073|074|075|076|077|078|079|080|081|082|083|084|085|086|087|088|089|090)'
+					token_dict["numero"] = '045?(048|049|050|051|052|053|054|055|056|057)+'
+					token_dict["digito"] = '(048|049|050|051|052|053|054|055|056|057)'
+					token_dict["espacioEnBlanco"] = '(032)+'
+					token_dict["delimitador"] = '(032)'
+					actions_dict["while-"] = 'print("Operador while")'
+					actions_dict["for-"] = 'print("Operador for")'
+					actions_dict["if-"] = 'print("Operador if")'
+					actions_dict["="] = 'print("Operador de asignación")'
 					actions_dict["*"] = 'print("Operador de multiplicación")'
+					actions_dict["+"] = 'print("Operador de suma")'
+					actions_dict["delimitador"] = ''
+					actions_dict["espacioEnBlanco"] = ''
+					actions_dict["digito"] = 'print("Digito")'
+					actions_dict["numero"] = 'print("Número")'
+					actions_dict["identificador"] = 'print("Identificador")'
 
 
 					for token in token_dict:
@@ -868,41 +876,55 @@ if __name__ == "__main__":
 					accepted_automatas = { }
 				
 					with open('input.txt', 'r') as input_file:
-						input = input_file.read()
+						lines = input_file.readlines()
+
 						input_file.close()
+						errors = []
+						for l in range(len(lines)):
+							input = lines[l]
+							# Read every character in the input
+							buffer = ""
+							lexeme_begin = 0
+							i = 0
 
-						# Read every character in the input
-						buffer = ""
-						lexeme_begin = 0
-						i = 0
+							while i < len(input):
+								char = input[i]
+								buffer += char		
+								stop_search = True
 
-						while i < len(input):
-							char = input[i]
-							buffer += char		
-							stop_search = True
+								for automata in automata_dict:
+									states = automata_dict[automata].simulate(buffer)
+									if len(states) > 0:
+										stop_search = False
+										if automata_dict[automata]._final in states:
+											# The automata accepted the buffer
+											accepted_automatas[automata] = (lexeme_begin, i + 1)
+								if stop_search:
+									# The buffer was not accepted by any automata
+									# Check if there is an accepted automata
+									if len(accepted_automatas) > 0:
+										# Find the automata with the longest prefix
+										automata = max(accepted_automatas, key=lambda x: accepted_automatas[x][1] - accepted_automatas[x][0])
+										# print(automata, input[accepted_automatas[automata][0]:accepted_automatas[automata][1]])
+										action = automata_dict[automata]._action
+										if action is not None:
+											exec(action)
 
-							for automata in automata_dict:
-								states = automata_dict[automata].simulate(buffer)
-								if len(states) > 0:
-									stop_search = False
-									if automata_dict[automata]._final in states:
-										# The automata accepted the buffer
-										accepted_automatas[automata] = (lexeme_begin, i + 1)
-							if stop_search:
-								# The buffer was not accepted by any automata
-								# Check if there is an accepted automata
-								if len(accepted_automatas) > 0:
-									# Find the automata with the longest prefix
-									automata = max(accepted_automatas, key=lambda x: accepted_automatas[x][1] - accepted_automatas[x][0])
-									# print(automata, input[accepted_automatas[automata][0]:accepted_automatas[automata][1]])
-									action = automata_dict[automata]._action
-									if action is not None:
-										exec(action)
+										lexeme_begin = accepted_automatas[automata][1]
+										# Reset state of simulation
+										accepted_automatas = {}
+										buffer = ""
+										i = lexeme_begin - 1
+									else:
+										if buffer != "\n":
+											# No automata accepted the buffer
+											errors.append("Error at line " + str(l + 1) + " at position " + str(i + 1) + ": " + buffer)
+											accepted_automatas = {}
+											buffer = ""
+											lexeme_begin = i
 
-									lexeme_begin = accepted_automatas[automata][1]
-									# Reset state of simulation
-									accepted_automatas = {}
-									buffer = ""
-									i = lexeme_begin - 1
-							i += 1
+
+								i += 1
+						for error in errors:
+							print(error)
 				
