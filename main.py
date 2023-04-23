@@ -3,7 +3,7 @@ from Automata import Automata
 
 l = Lexer('yalex2.txt')
 
-
+l.create_program()
 
 
 token_dict = {}
