@@ -16,4 +16,3 @@ rule tokens =
   | delimitador	{  }
   | '+'				{ print("Operador de suma") }
   | '*'				{ print("Operador de multiplicación") }
-  | '='				{ print("Operador de asignación") }
