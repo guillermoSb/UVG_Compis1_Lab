@@ -1,1 +1,1 @@
-variable     -35444 xora 
+variable  +  33  =  otraVariable  *  22  variable2  =  variable       + 33

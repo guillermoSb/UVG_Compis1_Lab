@@ -11,8 +11,9 @@ let identificador = letra(letra|digito)*
 rule tokens =
   | identificador	{ print("Identificador") }
   | numero			{ print("Número") }
-  | espacioEnBlanco	{ print("Espacio") }
-  | delimitador	{ print("delimitador") }
+  | digito			{ print("Digito") }
+  | espacioEnBlanco	{ }
+  | delimitador	{  }
   | '+'				{ print("Operador de suma") }
   | '*'				{ print("Operador de multiplicación") }
   | '='				{ print("Operador de asignación") }

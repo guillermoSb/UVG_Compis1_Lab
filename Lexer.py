@@ -70,8 +70,8 @@ class Lexer():
 			return automata
 
 
-		@classmethod		
-		def parse_action_line(cls, line):
+		
+		def parse_action_line(self, line):
 			# Parse a line of the form: 'token' {action}
 			name = ''
 			value = ''
@@ -94,6 +94,12 @@ class Lexer():
 					name += char
 			value = value.strip()
 			new_action = Action(type, name, value)
+			if new_action.type == 'keyword':
+				token_value = ''
+				for char in new_action.name:
+					token_value += "{0:0=3d}".format(ord(char))
+				new_token = Token(new_action.name, token_value)
+				self.tokens[new_action.name] = new_token
 			return new_action
 		
 

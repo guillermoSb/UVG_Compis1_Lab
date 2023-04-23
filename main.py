@@ -35,7 +35,7 @@ with open('input.txt', 'r') as input_file:
 	buffer = ""
 	lexeme_begin = 0
 	i = 0
-	print(actions_dict)
+	
 	while i < len(input):
 		char = input[i]
 		buffer += char		
@@ -58,8 +58,7 @@ with open('input.txt', 'r') as input_file:
 				action = automata_dict[automata]._action
 				if action is not None:
 					exec(action)
-				else:
-					print("Accion no disponible: ", automata)
+				
 				lexeme_begin = accepted_automatas[automata][1]
 				# Reset state of simulation
 				accepted_automatas = {}
