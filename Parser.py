@@ -15,6 +15,10 @@ class Grammar():
 				self.productions[self.start] = [self.start[0]]
 
 class Parser():
-	def __init__(self):
-		pass
+	def __init__(self, grammar):
+		'''A Parser is used to parse a language. It takes a grammar as input and provides a parse method.'''
+		self.grammar = grammar
+
+	
+
 	
