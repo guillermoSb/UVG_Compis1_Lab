@@ -46,6 +46,9 @@ class Parser():
 		current_production = ''
 		for line in file:
 			line = line.strip()
+			# Handle error: cannot declare token
+			if line.startswith('%token'):
+				raise Exception("[PARSER ERROR] Cannot declare token after %%")
 			# Skip comments
 			if line.startswith('/*'):
 				continue
