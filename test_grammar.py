@@ -14,7 +14,7 @@ def test_grammar_augment():
 		grammar.augment()
 		# Assert
 		assert grammar.start == 'E\''
-		assert grammar.non_terminals == ['E', 'T', 'F', 'E\'']
+		assert grammar.non_terminals == ['E\'', 'E', 'T', 'F']
 		assert grammar.productions == {
 			'E': ['E+T', 'T'],
 			'T': ['T*F', 'F'],
