@@ -8,4 +8,4 @@ from Automata import Automata
 # l.create_program()
 
 parser = Parser._from_file('yapar.txt')
-
+print(parser.grammar.productions)

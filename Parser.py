@@ -11,7 +11,7 @@ class Grammar():
 		def augment(self):
 				'''Augment the grammar'''
 				self.start = self.start + "'"
-				self.non_terminals.append(self.start)
+				self.non_terminals.insert(0, self.start)
 				self.productions[self.start] = [self.start[0]]
 
 class Parser():
@@ -19,7 +19,34 @@ class Parser():
 	def __init__(self, grammar):
 		grammar.augment()
 		self.grammar = grammar
-	
+
+	def closure(self, items):
+		j = items
+		c = 0
+		while c < 10:
+			new_j = j
+			for item in new_j:
+				# Each item is a tuple (non_terminal, production_number, position)
+				production = self.grammar.productions[item[0]][item[1]]
+				if item[2] < len(production):
+					next_symbol = production[item[2]]
+					if next_symbol in self.grammar.non_terminals:
+						for next_production in self.grammar.productions[next_symbol]:
+							new_j = new_j.union({(next_symbol, self.grammar.productions[next_symbol].index(next_production), 0)})
+				
+				# for production in self.grammar.productions:
+					
+				# 	if production == production_head:
+				# 		print("yay")
+			
+			if len(new_j) == len(j):
+				break
+			
+			j = new_j
+			
+		return j
+
+
 	@classmethod
 	def _from_file(cls, file_name):
 		file = open(file_name, 'r')
@@ -29,7 +56,6 @@ class Parser():
 		productions = {}
 
 		can_read_tokens = True
-		token_line = None
 		# Read the file line by line
 		for line in file:
 			line = line.strip()	# Remove leading and trailing whitespace			
@@ -61,6 +87,7 @@ class Parser():
 					current_production += char
 			else:
 				if line == ";":
+					non_terminals.append(current_production)
 					is_making_production = False
 					current_production = ''
 				else:
