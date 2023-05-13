@@ -1,4 +1,4 @@
-
+from graphviz import Digraph
 
 class Grammar():
 		'''A Grammar is used to define a language'''
@@ -50,7 +50,53 @@ class Parser():
 				if next_symbol == symbol:
 					j = j.union({(item[0], item[1], item[2] + 1)})
 		return self.closure(j)
+	
+	def items(self):
+		'''Generate the construct C'''
+		start = self.closure({(self.grammar.start, 0, 0)})
+		C = [self.closure({(self.grammar.start, 0, 0)})]
+		transitions = {
+			tuple(start): {}
+		}
+		while True:
+			new_C = C
+			for item_set in new_C:
+				for symbol in self.grammar.non_terminals + self.grammar.terminals:
+					go_to = self.go_to(item_set, symbol)
+					if go_to is not None and len(go_to) > 0:
+						if go_to not in new_C:
+							new_C.append(go_to)
+							if tuple(item_set) not in transitions:
+								transitions[tuple(item_set)] = {}
+							transitions[tuple(item_set)][symbol] = go_to
+			if len(new_C) == len(C):
+				break
+			C = new_C
 
+		return transitions, C
+
+	def draw_automata(self):
+		transitions, C = self.items();
+		state_map = {}
+		state_count = 0
+		for state in C:
+			state_map[tuple(state)] = state_count
+			state_count += 1
+		
+		dot = Digraph(graph_attr={'rankdir': 'LR'})
+		for state in C:
+			dot.node('{}'.format(state_map[tuple(state)]), label=Parser._format_item_set(tuple(state), self.grammar), shape="box")
+		for state in transitions:
+			for transition in transitions[state]:
+				dot.edge('{}'.format(state_map[tuple(state)]), '{}'.format(state_map[tuple(transitions[state][transition])]), label='{}'.format(transition))
+		dot.render('automaton_lex.gv', view=True)
+	
+	@classmethod
+	def _format_item_set(cls, item_set, grammar):
+		item_format = ""
+		for item in item_set:
+			item_format +=  "{} -> ".format(item[0]) + " ".join(grammar.productions[item[0]][item[1]][:item[2]]) + " . " + " ".join(grammar.productions[item[0]][item[1]][item[2]:]) + "\n"
+		return item_format
 
 	@classmethod
 	def _from_file(cls, file_name):

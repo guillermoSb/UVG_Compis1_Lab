@@ -1,0 +1,24 @@
+/* Definición de parser */
+/* INICIA sección de TOKENS */
+%token i
+%token +
+%token (
+%token )
+%token *
+/* FINALIZA sección de TOKENS */
+%%
+
+/* INICIA sección de PRODUCCIONES */
+E:
+ E+T
+ | T
+;
+T:
+ T*F
+ | F
+;
+F:
+ (E)
+ | i
+;
+/* FINALIZA sección de PRODUCCIONES */

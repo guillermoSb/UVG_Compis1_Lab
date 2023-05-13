@@ -21,4 +21,10 @@ def test_parser02():
 		assert item in {('E', 0, 2), ('T', 1, 0), ('F', 1, 0), ('E', 1, 0), ('T', 0, 0), ('F', 0, 0)}
 	
 	
-
+def test_parser03():
+	# Arrange
+	parser = Parser._from_file('yapar.txt')
+	# Act
+	items = parser.items()
+	# Assert
+	assert True == False

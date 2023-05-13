@@ -7,5 +7,6 @@ from Automata import Automata
 # # a.draw()
 # l.create_program()
 
-parser = Parser._from_file('yapar.txt')
+parser = Parser._from_file('yapar2.txt')
 print(parser.grammar.productions)
+parser.draw_automata()

@@ -1,0 +1,60 @@
+digraph {
+	graph [rankdir=LR]
+	0 [label="E' ->  . E
+T ->  . T * F
+T ->  . F
+F ->  . ( E )
+E ->  . E + T
+F ->  . i
+E ->  . T
+" shape=box]
+	1 [label="E' -> E . 
+E -> E . + T
+" shape=box]
+	2 [label="T -> T . * F
+E -> T . 
+" shape=box]
+	3 [label="T -> F . 
+" shape=box]
+	4 [label="F -> i . 
+" shape=box]
+	5 [label="T ->  . T * F
+T ->  . F
+F ->  . ( E )
+F -> ( . E )
+F ->  . i
+E ->  . T
+E ->  . E + T
+" shape=box]
+	6 [label="T ->  . T * F
+T ->  . F
+E -> E + . T
+F ->  . ( E )
+F ->  . i
+" shape=box]
+	7 [label="F ->  . ( E )
+F ->  . i
+T -> T * . F
+" shape=box]
+	8 [label="F -> ( E . )
+E -> E . + T
+" shape=box]
+	9 [label="T -> T . * F
+E -> E + T . 
+" shape=box]
+	10 [label="T -> T * F . 
+" shape=box]
+	11 [label="F -> ( E ) . 
+" shape=box]
+	0 -> 1 [label=E]
+	0 -> 2 [label=T]
+	0 -> 3 [label=F]
+	0 -> 4 [label=i]
+	0 -> 5 [label="("]
+	1 -> 6 [label="+"]
+	2 -> 7 [label="*"]
+	5 -> 8 [label=E]
+	6 -> 9 [label=T]
+	7 -> 10 [label=F]
+	8 -> 11 [label=")"]
+}
